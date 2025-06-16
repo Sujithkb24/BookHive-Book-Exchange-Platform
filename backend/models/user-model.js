@@ -39,4 +39,20 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+userSchema.pre('save', async function(next) {
+  if (this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  next();
+});
+
+// Add method to generate tokens
+userSchema.methods.generateAuthToken = function() {
+  return jwt.sign(
+    { userId: this._id },
+    process.env.JWT_SECRET_KEY,
+    { expiresIn: '1h' }
+  );
+};
+
 module.exports = User;

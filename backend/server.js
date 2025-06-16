@@ -9,11 +9,16 @@ const orderRouter = require('./router/order-router');
 const connectToDatabase = require('./utils/database');
 
 const port = 3000;
-
+app.use(cors({
+  origin: 'http://localhost:5173', 
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 app.use(express.json())
 app.use('/api/auth', authRouter);
 app.use('/api/sell', sellRouter);
 app.use('/api/order', orderRouter);
+
 
 connectToDatabase().then(() => {
   app.listen(port, () => {
