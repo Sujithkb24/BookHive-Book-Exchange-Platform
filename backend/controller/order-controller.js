@@ -1,4 +1,5 @@
 const BookOrder = require("../models/book-order-model");
+const Cart = require("../models/cart-model");
 const User = require("../models/user-model");
 
 
@@ -28,6 +29,12 @@ const orderBook = async (req, res) => {
         user.token -= tokensUsed;
         await user.save();
 
+        const cart = await Cart.findOne({ userId: buyer });
+        if (cart) {
+            cart.items = cart.items.filter(item => item.toString() !== bookId.toString());
+            await cart.save();
+        }
+
         res.status(201).json({ message: "Order placed successfully", order: newOrder });
     } catch (error) {
         console.error("Error placing order:", error);
@@ -51,6 +58,20 @@ const getOrdersToMe = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 }
+
+const myOrders = async (req, res) => {
+    const userId = req.id; // Assuming the user ID is stored in req.user after authentication
+    try {
+        const orders = await BookOrder.find({ buyer: userId })
+        if (!orders || orders.length === 0) {
+            return res.status(404).json({ message: "No orders found" });
+        }
+        res.status(200).json({ orders });
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
 
 const updateRecieved = async (req, res) => {
  
@@ -161,5 +182,6 @@ module.exports = {
     updateRecieved,
     updateDelivered,
     orderCancelBySeller,
-    orderCancelByBuyer
+    orderCancelByBuyer,
+    myOrders
 };

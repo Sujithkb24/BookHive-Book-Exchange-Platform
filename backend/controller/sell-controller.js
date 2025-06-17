@@ -1,8 +1,10 @@
 const bookModel = require('../models/book-sell-model');
+const User = require('../models/user-model');
 
 const getBookDetails = async (req, res, isbn) => {
     try {
-        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:9781847941831`);
+
+        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
         const data = await response.json();
 
         const bookName = data.items[0].volumeInfo.title;
@@ -113,7 +115,29 @@ const deleteSell = async (req, res) => {
     }
 }
 
+const getSellById = async (req, res) => {
+    const { sellId } = req.params;
+
+    try {
+        const sell = await bookModel.findById(sellId);
+        if (!sell) {
+            return res.status(404).json({ message: 'Sell not found' });
+        }
+        const sellerUserId = sell.sellerUserId;
+        console.log(sellerUserId);
+        const sellerDetails = await User.findById(sellerUserId);
+
+        console.log(sellerDetails.username);
+        const sellerName = sellerDetails.username;
+        return res.status(200).json({ sell, sellerName });
+    } catch (error) {
+        console.error('Error fetching sell:', error);
+        return res.status(500).json({ message: 'Error fetching sell', error: error.message });
+    }
+}
+
 module.exports = {
+    getSellById,
     getBookDetails,
     getDescription,
     addSell,

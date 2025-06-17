@@ -1,11 +1,18 @@
 const User = require('../models/user-model');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const reportModel = require("../models/reportModel")
+const Cart = require('../models/cart-model');
+const bookModel = require('../models/book-sell-model');
 
 const register = async (req, res) => {
   const { username, password, email} = req.body;
     try {
         // Check if user already exists
+        const isUserReported = await reportModel.findOne({ reportedEmails: email });
+        if (isUserReported) {
+            return res.status(400).json({ message: 'User is reported and cannot register', success: false });
+        }
         const existingUser = await User.find({ email });
         if (existingUser.length > 0) {
             return res.status(400).json({ message: 'User already exists', success: false });
@@ -16,7 +23,8 @@ const register = async (req, res) => {
         const newUser = new User({
             username,
             password: hashedPassword,
-            email
+            email,
+            reportCount: 0,
         });
         // Save the user to the database
         await newUser.save();
@@ -78,4 +86,104 @@ const additionalInfo = async (req, res) => {
     }   
 }
 
-module.exports = {register, login, additionalInfo};
+const reportUser = async (req, res) => {
+  const { userId } = req.body;
+  try {
+    // Find the user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found', success: false });
+    }
+    // Increment the report count
+    user.reportCount += 1;
+    // Save the updated user
+    await user.save();
+
+    if (user.reportCount >= 3) {
+      // If the report count reaches 3, delete the user
+      await User.deleteOne({ _id: userId });
+      const report = new reportModel({
+        reportedEmails: user.email
+      });
+      // Save the report
+      await report.save();
+      return res.status(200).json({ message: 'User reported and deleted successfully', success: true });
+    }
+    // Respond with success
+    res.status(200).json({ message: 'User reported successfully', success: true });
+  }
+  catch (error) {
+    console.error('Error reporting user:', error);
+    res.status(500).json({ message: 'Internal server error', success: false });
+  }
+}
+
+const addToCart = async (req, res) => {
+  const userId = req.id;
+  const { bookId } = req.body;
+  try {
+    // Find the user by ID
+    const cart = await Cart.findOne({ userId });
+    if (cart == null) {
+      // If the cart does not exist, create a new one
+      const newCart = new Cart({
+        userId,
+        items: [bookId],
+        totalPrice: 0 // Initialize total price to 0
+      });
+
+      await newCart.save();
+    }
+
+    
+    else if(cart.items.length > 0) {
+      // If the cart already exists, add the book to the existing cart
+      
+      cart.items.push(bookId);
+      await cart.save();
+      
+    }
+    return res.status(201).json({ message: 'Book added to cart successfully', success: true });
+  
+}catch (error) {
+    console.error('Error adding book to cart:', error);
+    res.status(500).json({ message: 'Internal server error', success: false });
+  }
+}
+
+const getallCartItems = async (req, res) => {
+  const userId = req.id;
+  try {
+    const cart = await Cart.findOne({ userId });
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found', success: false });
+    }
+
+    const bookDetails = await Promise.all(
+      cart.items.map(async (itemId) => {
+        const book = await bookModel.findById(itemId);
+        if (book) {
+          return {
+            isbn: book.isbn,
+            id: book._id,
+            bookName: book.bookName,
+            author: book.author,
+            tokens: book.token,
+          };
+        }
+        return null; // or filter it out later
+      })
+    );
+
+    // Remove null values if any books were not found
+    const filteredBooks = bookDetails.filter(book => book !== null);
+
+    res.status(200).json({ books: filteredBooks, success: true });
+  } catch (error) {
+    console.error('Error fetching cart items:', error);
+    res.status(500).json({ message: 'Internal server error', success: false });
+  }
+};
+
+
+module.exports = {register, login, additionalInfo, reportUser, addToCart, getallCartItems};
