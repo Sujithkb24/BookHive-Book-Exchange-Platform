@@ -1,394 +1,747 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Filter, SortDesc, ShoppingCart, Eye, Book, Home, Users, Settings, Menu, X, Star, Tag } from 'lucide-react';
+import React, { useState, createContext, useContext, useMemo } from 'react';
+import { ShoppingCart, Plus, Minus, Trash2, ArrowLeft, CreditCard, Search, Filter, Menu, X, ChevronDown, Star } from 'lucide-react';
 
-const BookshopDashboard = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('title');
-  const [showFilters, setShowFilters] = useState(false);
+// Cart Context
+const CartContext = createContext();
 
-  // Sample book data
-  const [books] = useState([
-    {
-      id: 1,
-      title: "The Midnight Library",
-      author: "Matt Haig",
-      price: 24.99,
-      rating: 4.5,
-      tags: ["Fiction", "Philosophy", "Bestseller"],
-      genre: "fiction",
-      image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=400&fit=crop",
-      description: "A dazzling novel about all the choices that go into a life well lived."
-    },
-    {
-      id: 2,
-      title: "Atomic Habits",
-      author: "James Clear",
-      price: 19.99,
-      rating: 4.8,
-      tags: ["Self-Help", "Productivity", "Psychology"],
-      genre: "self-help",
-      image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=400&fit=crop",
-      description: "An easy & proven way to build good habits & break bad ones."
-    },
-    {
-      id: 3,
-      title: "Dune",
-      author: "Frank Herbert",
-      price: 16.99,
-      rating: 4.7,
-      tags: ["Sci-Fi", "Classic", "Adventure"],
-      genre: "sci-fi",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=400&fit=crop",
-      description: "A stunning blend of adventure and mysticism, environmentalism and politics."
-    },
-    {
-      id: 4,
-      title: "The Seven Husbands of Evelyn Hugo",
-      author: "Taylor Jenkins Reid",
-      price: 22.50,
-      rating: 4.6,
-      tags: ["Romance", "Drama", "LGBTQ+"],
-      genre: "romance",
-      image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&h=400&fit=crop",
-      description: "A reclusive Hollywood icon finally tells her story."
-    },
-    {
-      id: 5,
-      title: "Educated",
-      author: "Tara Westover",
-      price: 18.99,
-      rating: 4.4,
-      tags: ["Memoir", "Education", "Biography"],
-      genre: "biography",
-      image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=400&fit=crop",
-      description: "A memoir that transforms from a story of survival to one of self-creation."
-    },
-    {
-      id: 6,
-      title: "The Silent Patient",
-      author: "Alex Michaelides",
-      price: 21.99,
-      rating: 4.3,
-      tags: ["Thriller", "Mystery", "Psychological"],
-      genre: "thriller",
-      image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=400&fit=crop",
-      description: "A woman's act of violence against her husband triggers a story that refuses to be forgotten."
-    }
-  ]);
-
+// Cart Provider Component
+const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
-  const sidebarItems = [
-    { icon: Home, label: 'Dashboard', active: true },
-    { icon: Book, label: 'Books' },
-    { icon: Users, label: 'Authors' },
-    { icon: ShoppingCart, label: 'Orders' },
-    { icon: Settings, label: 'Settings' }
-  ];
-
-  const filterOptions = [
-    { value: 'all', label: 'All Books' },
-    { value: 'fiction', label: 'Fiction' },
-    { value: 'sci-fi', label: 'Sci-Fi' },
-    { value: 'romance', label: 'Romance' },
-    { value: 'self-help', label: 'Self-Help' },
-    { value: 'biography', label: 'Biography' },
-    { value: 'thriller', label: 'Thriller' }
-  ];
-
-  const sortOptions = [
-    { value: 'title', label: 'Title' },
-    { value: 'price-low', label: 'Price: Low to High' },
-    { value: 'price-high', label: 'Price: High to Low' },
-    { value: 'rating', label: 'Rating' }
-  ];
-
-  const filteredAndSortedBooks = books
-    .filter(book => {
-      const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           book.author.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesFilter = selectedFilter === 'all' || book.genre === selectedFilter;
-      return matchesSearch && matchesFilter;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'title':
-          return a.title.localeCompare(b.title);
-        case 'price-low':
-          return a.price - b.price;
-        case 'price-high':
-          return b.price - a.price;
-        case 'rating':
-          return b.rating - a.rating;
-        default:
-          return 0;
-      }
-    });
-
   const addToCart = (book) => {
-    setCart(prev => [...prev, book]);
+    setCart(prev => {
+      const existingItem = prev.find(item => item.id === book.id);
+      if (existingItem) {
+        return prev.map(item =>
+          item.id === book.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prev, { ...book, quantity: 1 }];
+    });
+  };
+
+  const removeFromCart = (bookId) => {
+    setCart(prev => prev.filter(item => item.id !== bookId));
+  };
+
+  const updateQuantity = (bookId, newQuantity) => {
+    if (newQuantity === 0) {
+      removeFromCart(bookId);
+      return;
+    }
+    setCart(prev =>
+      prev.map(item =>
+        item.id === bookId
+          ? { ...item, quantity: newQuantity }
+          : item
+      )
+    );
+  };
+
+  const getTotalPrice = () => {
+    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
+  const getTotalItems = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-2000"></div>
+    <CartContext.Provider value={{
+      cart,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      getTotalPrice,
+      getTotalItems
+    }}>
+      {children}
+    </CartContext.Provider>
+  );
+};
+
+// Custom hook to use cart context
+const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
+};
+
+// Enhanced sample book data
+const sampleBooks = [
+  {
+    id: 1,
+    title: "The Great Gatsby",
+    author: "F. Scott Fitzgerald",
+    price: 15.99,
+    rating: 4.5,
+    genre: "Fiction",
+    tags: ["Classic", "American Literature"],
+    image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=200&h=300&fit=crop&crop=center",
+    description: "A classic American novel about the Jazz Age",
+    publishYear: 1925,
+    pages: 180
+  },
+  {
+    id: 2,
+    title: "To Kill a Mockingbird",
+    author: "Harper Lee",
+    price: 12.99,
+    rating: 4.8,
+    genre: "Fiction",
+    tags: ["Classic", "Social Issues"],
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=300&fit=crop&crop=center",
+    description: "A gripping tale of racial injustice and childhood innocence",
+    publishYear: 1960,
+    pages: 281
+  },
+  {
+    id: 3,
+    title: "1984",
+    author: "George Orwell",
+    price: 13.99,
+    rating: 4.7,
+    genre: "Science Fiction",
+    tags: ["Dystopian", "Political"],
+    image: "https://images.unsplash.com/photo-1495640388908-05fa85288e61?w=200&h=300&fit=crop&crop=center",
+    description: "A dystopian social science fiction novel",
+    publishYear: 1949,
+    pages: 328
+  },
+  {
+    id: 4,
+    title: "Pride and Prejudice",
+    author: "Jane Austen",
+    price: 14.99,
+    rating: 4.6,
+    genre: "Romance",
+    tags: ["Classic", "Romance"],
+    image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=200&h=300&fit=crop&crop=center",
+    description: "A romantic novel of manners",
+    publishYear: 1813,
+    pages: 432
+  },
+  {
+    id: 5,
+    title: "The Catcher in the Rye",
+    author: "J.D. Salinger",
+    price: 16.99,
+    rating: 4.2,
+    genre: "Fiction",
+    tags: ["Coming of Age", "American Literature"],
+    image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=200&h=300&fit=crop&crop=center",
+    description: "A controversial novel about teenage rebellion",
+    publishYear: 1951,
+    pages: 277
+  },
+  {
+    id: 6,
+    title: "Dune",
+    author: "Frank Herbert",
+    price: 18.99,
+    rating: 4.9,
+    genre: "Science Fiction",
+    tags: ["Epic", "Space Opera"],
+    image: "https://images.unsplash.com/photo-1589998059171-988d887df646?w=200&h=300&fit=crop&crop=center",
+    description: "A science fiction masterpiece about desert planets",
+    publishYear: 1965,
+    pages: 688
+  }
+];
+
+// Sidebar Component
+const Sidebar = ({ isOpen, onClose, filters, onFiltersChange, onClearFilters }) => {
+  const genres = [...new Set(sampleBooks.map(book => book.genre))];
+  const authors = [...new Set(sampleBooks.map(book => book.author))];
+  const priceRanges = [
+    { label: "Under $15", min: 0, max: 15 },
+    { label: "$15 - $20", min: 15, max: 20 },
+    { label: "Over $20", min: 20, max: 1000 }
+  ];
+
+  const handleGenreChange = (genre) => {
+    const newGenres = filters.genres.includes(genre)
+      ? filters.genres.filter(g => g !== genre)
+      : [...filters.genres, genre];
+    onFiltersChange({ ...filters, genres: newGenres });
+  };
+
+  const handleAuthorChange = (author) => {
+    const newAuthors = filters.authors.includes(author)
+      ? filters.authors.filter(a => a !== author)
+      : [...filters.authors, author];
+    onFiltersChange({ ...filters, authors: newAuthors });
+  };
+
+  const handlePriceRangeChange = (range) => {
+    onFiltersChange({ ...filters, priceRange: range });
+  };
+
+  const handleRatingChange = (rating) => {
+    onFiltersChange({ ...filters, minRating: rating });
+  };
+
+  return (
+    <>
+      {/* Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+      
+      {/* Sidebar */}
+      <div className={`fixed left-0 top-0 h-full w-80 bg-gray-800 z-50 transform transition-transform duration-300 ease-in-out ${
+        isOpen ? 'translate-x-0' : '-translate-x-full'
+      } lg:relative lg:translate-x-0 lg:w-64`}>
+        <div className="p-6 h-full overflow-y-auto">
+            <div className="flex items-center space-x-3">
+          <img
+            src="/favicon.png"
+            alt="Logo"
+            className="w-8 h-8 rounded-full shadow"
+          />
+          <span className="text-white text-xl font-semibold tracking-wide">
+            BookHive
+          </span>
+        </div>
+             <nav className="mt-6 mb-7 space-y-7">
+      <a href="/home" className="block text-gray-300 hover:text-white transition">🏠 Home</a>
+      <a href="/about" className="block text-gray-300 hover:text-white transition">ℹ️ About</a>
+      <a href="/services" className="block text-gray-300 hover:text-white transition">🛠 Services</a>
+      <a href="/contact" className="block text-gray-300 hover:text-white transition">📞 Contact</a>
+    </nav>
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-white flex items-center">
+              <Filter className="w-5 h-5 mr-2" />
+              Filters
+            </h2>
+            <button
+              onClick={onClose}
+              className="lg:hidden text-gray-400 hover:text-white"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Clear Filters */}
+          <button
+            onClick={onClearFilters}
+            className="w-full mb-6 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200"
+          >
+            Clear All Filters
+          </button>
+
+          {/* Genre Filter */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-white mb-3">Genre</h3>
+            {genres.map(genre => (
+              <label key={genre} className="flex items-center mb-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={filters.genres.includes(genre)}
+                  onChange={() => handleGenreChange(genre)}
+                  className="mr-3 w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
+                />
+                <span className="text-gray-300">{genre}</span>
+              </label>
+            ))}
+          </div>
+
+          {/* Author Filter */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-white mb-3">Author</h3>
+            {authors.map(author => (
+              <label key={author} className="flex items-center mb-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={filters.authors.includes(author)}
+                  onChange={() => handleAuthorChange(author)}
+                  className="mr-3 w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 rounded focus:ring-purple-500"
+                />
+                <span className="text-gray-300 text-sm">{author}</span>
+              </label>
+            ))}
+          </div>
+
+          {/* Price Range */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-white mb-3">Price Range</h3>
+            {priceRanges.map((range, index) => (
+              <label key={index} className="flex items-center mb-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="priceRange"
+                  checked={filters.priceRange?.label === range.label}
+                  onChange={() => handlePriceRangeChange(range)}
+                  className="mr-3 w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500"
+                />
+                <span className="text-gray-300">{range.label}</span>
+              </label>
+            ))}
+          </div>
+
+          {/* Rating Filter */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-white mb-3">Minimum Rating</h3>
+            {[4, 4.5, 4.8].map(rating => (
+              <label key={rating} className="flex items-center mb-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="rating"
+                  checked={filters.minRating === rating}
+                  onChange={() => handleRatingChange(rating)}
+                  className="mr-3 w-4 h-4 text-purple-600 bg-gray-700 border-gray-600 focus:ring-purple-500"
+                />
+                <div className="flex items-center">
+                  <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
+                  <span className="text-gray-300">{rating}+ Stars</span>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
       </div>
+    </>
+  );
+};
+
+// Dashboard Component
+const Dashboard = ({ onNavigateToCart }) => {
+  const { addToCart, getTotalItems } = useCart();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('title');
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [filters, setFilters] = useState({
+    genres: [],
+    authors: [],
+    priceRange: null,
+    minRating: null
+  });
+const BOOKS_PER_PAGE = 3;
+  const [currentPage, setCurrentPage] = useState(1);
+
+
+  // Filter and sort books
+  const filteredAndSortedBooks = useMemo(() => {
+    let filtered = sampleBooks.filter(book => {
+      // Search filter
+      const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           book.description.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      // Genre filter
+      const matchesGenre = filters.genres.length === 0 || filters.genres.includes(book.genre);
+      
+      // Author filter
+      const matchesAuthor = filters.authors.length === 0 || filters.authors.includes(book.author);
+      
+      // Price range filter
+      const matchesPrice = !filters.priceRange || 
+                          (book.price >= filters.priceRange.min && book.price <= filters.priceRange.max);
+      
+      // Rating filter
+      const matchesRating = !filters.minRating || book.rating >= filters.minRating;
+
+      return matchesSearch && matchesGenre && matchesAuthor && matchesPrice && matchesRating;
+    });
+
+    // Sort books
+    filtered.sort((a, b) => {
+      let aValue = a[sortBy];
+      let bValue = b[sortBy];
+      
+      if (sortBy === 'title' || sortBy === 'author') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+      
+      if (sortOrder === 'asc') {
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+      } else {
+        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+      }
+    });
+
+    return filtered;
+  }, [searchQuery, filters, sortBy, sortOrder]);
+
+  const clearFilters = () => {
+    setFilters({
+      genres: [],
+      authors: [],
+      priceRange: null,
+      minRating: null
+    });
+    setSearchQuery('');
+  };
+
+  const sortOptions = [
+    { value: 'title', label: 'Title' },
+    { value: 'author', label: 'Author' },
+    { value: 'price', label: 'Price' },
+    { value: 'rating', label: 'Rating' },
+    { value: 'publishYear', label: 'Year' }
+  ];
+  
+// Calculate total pages
+const totalPages = Math.ceil(filteredAndSortedBooks.length / BOOKS_PER_PAGE);
+
+// Get books to show on the current page
+const startIndex = (currentPage - 1) * BOOKS_PER_PAGE;
+const endIndex = startIndex + BOOKS_PER_PAGE;
+const currentBooks = filteredAndSortedBooks.slice(startIndex, endIndex);
+
+// Handler
+const handlePageChange = (pageNumber) => {
+  setCurrentPage(pageNumber);
+};
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white flex">
+      {/* Sidebar */}
+      <Sidebar 
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        filters={filters}
+        onFiltersChange={setFilters}
+        onClearFilters={clearFilters}
+      />
 
       {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'blur-sm' : ''}`}>
-        {/* Header */}
-        <header className="bg-gray-800 shadow-lg">
-          <div className="flex items-center justify-between px-6 py-4">
-            <div className="flex items-center space-x-4">
+      <div className="flex-1 min-h-screen">
+        <div className="max-w-7xl mx-auto p-6">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="lg:hidden bg-gray-700 hover:bg-gray-600 p-2 rounded-lg mr-4 transition-colors duration-200"
               >
-                <Menu className="w-6 h-6" />
+                <Menu className="w-5 h-5" />
               </button>
-              <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+              <h1 className="text-3xl font-bold">Store</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <ShoppingCart className="w-6 h-6 text-gray-400 hover:text-white transition-colors cursor-pointer" />
-                {cart.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-purple-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-bounce">
-                    {cart.length}
-                  </span>
-                )}
-              </div>
-            </div>
+            <button
+              onClick={onNavigateToCart}
+              className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              <span>Cart ({getTotalItems()})</span>
+            </button>
           </div>
-        </header>
 
-        {/* Search and Filter Bar */}
-        <div className="p-6 bg-gray-800 border-b border-gray-700">
-          <div className="flex flex-col lg:flex-row gap-4 max-w-7xl mx-auto">
+          {/* Search and Sort Controls */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
             {/* Search Bar */}
-            <div className="relative flex-1 max-w-2xl">
+            <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder="Search books, authors..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                placeholder="Search books, authors, or descriptions..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
 
-            {/* Filter and Sort */}
-            <div className="flex gap-2 flex-shrink-0">
-              <div className="relative">
-                <button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center space-x-2 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white hover:bg-gray-600 transition-colors whitespace-nowrap"
-                >
-                  <Filter className="w-5 h-5" />
-                  <span>Filter</span>
-                </button>
-                {showFilters && (
-                  <div className="absolute top-full mt-2 right-0 bg-gray-700 border border-gray-600 rounded-lg shadow-xl z-10 min-w-48">
-                    <div className="p-2">
-                      <div className="mb-3">
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Filter by Genre</label>
-                        {filterOptions.map(option => (
-                          <button
-                            key={option.value}
-                            onClick={() => {
-                              setSelectedFilter(option.value);
-                              setShowFilters(false);
-                            }}
-                            className={`block w-full text-left px-3 py-2 rounded hover:bg-gray-600 transition-colors ${
-                              selectedFilter === option.value ? 'bg-purple-600 text-white' : 'text-gray-300'
-                            }`}
-                          >
-                            {option.label}
-                          </button>
-                        ))}
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Sort by</label>
-                        {sortOptions.map(option => (
-                          <button
-                            key={option.value}
-                            onClick={() => {
-                              setSortBy(option.value);
-                              setShowFilters(false);
-                            }}
-                            className={`block w-full text-left px-3 py-2 rounded hover:bg-gray-600 transition-colors ${
-                              sortBy === option.value ? 'bg-purple-600 text-white' : 'text-gray-300'
-                            }`}
-                          >
-                            {option.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+            {/* Sort Controls */}
+            <div className="flex gap-2">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                {sortOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    Sort by {option.label}
+                  </option>
+                ))}
+              </select>
+              
+              <button
+                onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white hover:bg-gray-700 transition-colors duration-200 flex items-center"
+              >
+                <ChevronDown className={`w-4 h-4 transform transition-transform ${sortOrder === 'desc' ? 'rotate-180' : ''}`} />
+                <span className="ml-1">{sortOrder === 'asc' ? 'A-Z' : 'Z-A'}</span>
+              </button>
             </div>
           </div>
-        </div>
 
-        {/* Book Cards Grid */}
-        <main className="p-6 relative z-10">
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-white mb-2">
-                {selectedFilter === 'all' ? 'All Books' : filterOptions.find(f => f.value === selectedFilter)?.label}
-              </h2>
-              <p className="text-gray-400">
-                {filteredAndSortedBooks.length} book{filteredAndSortedBooks.length !== 1 ? 's' : ''} found
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-              {filteredAndSortedBooks.map((book, index) => (
-                <div
-                  key={book.id}
-                  className="bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border border-gray-700 hover:border-purple-500 group"
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                    animation: 'fadeInUp 0.6s ease-out forwards'
-                  }}
-                >
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={book.image}
-                      alt={book.title}
-                      className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <div className="absolute top-4 right-4">
-                      <div className="flex items-center space-x-1 bg-black/50 backdrop-blur-sm rounded-full px-2 py-1">
-                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                        <span className="text-white text-sm font-medium">{book.rating}</span>
-                      </div>
+          {/* Results Info */}
+          <div className="mb-6 text-gray-400">
+            Showing {filteredAndSortedBooks.length} of {sampleBooks.length} books
+          </div>
+        {/* Books Grid */}
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {currentBooks.map((book) => (
+    <div key={book.id} className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+          {/* Books Grid */}
+          <div>
+            
+              <div key={book.id} className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <img
+                  src={book.image}
+                  alt={book.title}
+                  className="w-full h-64 object-cover"
+                />
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">{book.title}</h3>
+                  <p className="text-gray-400 mb-2">by {book.author}</p>
+                  
+                  {/* Rating and Year */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center">
+                      <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
+                      <span className="text-sm text-gray-300">{book.rating}</span>
                     </div>
+                    <span className="text-sm text-gray-400">{book.publishYear}</span>
                   </div>
 
-                  <div className="p-6">
-                    <h3 className="text-lg font-bold text-white mb-2 line-clamp-1 group-hover:text-purple-400 transition-colors">
-                      {book.title}
-                    </h3>
-                    <p className="text-gray-400 mb-3 text-sm">by {book.author}</p>
-                    <p className="text-gray-500 text-sm mb-4 line-clamp-2">{book.description}</p>
+                  {/* Genre and Tags */}
+                  <div className="mb-3">
+                    <span className="inline-block px-2 py-1 bg-purple-600 text-xs rounded-full mr-2">
+                      {book.genre}
+                    </span>
+                    {book.tags.map((tag, index) => (
+                      <span key={index} className="inline-block px-2 py-1 bg-gray-700 text-xs rounded-full mr-1 mb-1">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
 
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {book.tags.slice(0, 3).map((tag, tagIndex) => (
-                        <span
-                          key={tagIndex}
-                          className="inline-flex items-center px-2 py-1 bg-purple-600/20 text-purple-300 text-xs rounded-full border border-purple-600/30"
-                        >
-                          <Tag className="w-3 h-3 mr-1" />
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Price and Actions */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-green-400">${book.price}</span>
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => addToCart(book)}
-                          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center space-x-1"
-                        >
-                          <ShoppingCart className="w-4 h-4" />
-                          <span className="hidden sm:inline">Add</span>
-                        </button>
-                        <button className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center space-x-1">
-                          <Eye className="w-4 h-4" />
-                          <span className="hidden sm:inline">View</span>
-                        </button>
-                      </div>
-                    </div>
+                  <p className="text-gray-300 text-sm mb-4">{book.description}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-2xl font-bold text-purple-400">${book.price}</span>
+                    <button
+                      onClick={() => addToCart(book)}
+                      className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center space-x-1"
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      <span className="hidden sm:inline">Add</span>
+                    </button>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {filteredAndSortedBooks.length === 0 && (
-              <div className="text-center py-12">
-                <Book className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-400 mb-2">No books found</h3>
-                <p className="text-gray-500">Try adjusting your search or filter criteria</p>
               </div>
-            )}
+            
           </div>
-        </main>
-      </div>
+           </div>
+  ))}
+  {/* Pagination */}
 
-      {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-800 border-r border-gray-700 backdrop-blur-lg transform transition-transform duration-300 ease-in-out ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
-        <div className="flex items-center justify-between h-16 px-6 ">
-          <div className="flex items-center space-x-2">
-            <Book className="w-8 h-8 text-purple-400 flex-shrink-0" />
-            <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              BookVault
-            </span>
-          </div>
-          <button
-            onClick={() => setSidebarOpen(false)}
-            className="text-gray-400 hover:text-white transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
+<div className="mt-8 flex justify-center items-center space-x-4">
+  <button
+    disabled={currentPage === 1}
+    onClick={() => handlePageChange(currentPage - 1)}
+    className="px-3 py-2 bg-gray-700 text-gray-300 rounded-md disabled:opacity-50"
+  >
+    Previous
+  </button>
+
+  {/* Page Numbers */}
+  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+    <button
+      key={page}
+      onClick={() => handlePageChange(page)}
+      className={`px-4 py-2 rounded-md ${
+        currentPage === page
+          ? "bg-purple-600 text-white"
+          : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+      }`}
+    >
+      {page}
+    </button>
+  ))}
+
+  <button
+    disabled={currentPage === totalPages}
+    onClick={() => handlePageChange(currentPage + 1)}
+    className="px-3 py-2 bg-gray-700 text-gray-300 rounded-md disabled:opacity-50"
+  >
+    Next
+  </button>
+</div>
+</div>
+
+          {/* No Results */}
+          {filteredAndSortedBooks.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-gray-500 mb-4">
+                <Search className="w-16 h-16 mx-auto mb-4" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-400 mb-2">No books found</h3>
+              <p className="text-gray-500 mb-4">Try adjusting your search or filters</p>
+              <button
+                onClick={clearFilters}
+                className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition-colors duration-200"
+              >
+                Clear Filters
+              </button>
+            </div>
+          )}
         </div>
-        <nav className="mt-8">
-          {sidebarItems.map((item, index) => (
-            <a
-              key={index}
-              href="#"
-              className={`flex items-center px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-all duration-200 transform hover:translate-x-1 ${
-                item.active ? 'bg-gray-700 text-white border-r-2 border-purple-400' : ''
-              }`}
-            >
-              <item.icon className="w-5 h-5 mr-3 flex-shrink-0" />
-              <span>{item.label}</span>
-            </a>
-          ))}
-        </nav>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .line-clamp-1 {
-          display: -webkit-box;
-          -webkit-line-clamp: 1;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-      `}</style>
     </div>
   );
 };
 
-export default BookshopDashboard;
+// Cart Page Component (unchanged)
+const CartPage = ({ onNavigateBack }) => {
+  const { cart, removeFromCart, updateQuantity, getTotalPrice } = useCart();
+
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center mb-8">
+            <button
+              onClick={onNavigateBack}
+              className="bg-gray-700 hover:bg-gray-600 p-2 rounded-lg mr-4 transition-colors duration-200"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h1 className="text-3xl font-bold">Shopping Cart</h1>
+          </div>
+          
+          <div className="bg-gray-800 rounded-lg p-12 text-center">
+            <ShoppingCart className="w-16 h-16 mx-auto mb-4 text-gray-500" />
+            <h2 className="text-xl font-semibold mb-2">Your cart is empty</h2>
+            <p className="text-gray-400 mb-6">Add some books to get started!</p>
+            <button
+              onClick={onNavigateBack}
+              className="bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition-colors duration-200"
+            >
+              Continue Shopping
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center mb-8">
+          <button
+            onClick={onNavigateBack}
+            className="bg-gray-700 hover:bg-gray-600 p-2 rounded-lg mr-4 transition-colors duration-200"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h1 className="text-3xl font-bold">Shopping Cart</h1>
+        </div>
+
+        {/* Cart Items */}
+        <div className="bg-gray-800 rounded-lg p-6 mb-6">
+          {cart.map((item) => (
+            <div key={item.id} className="flex items-center space-x-4 py-4 border-b border-gray-700 last:border-b-0">
+              <img
+                src={item.image}
+                alt={item.title}
+                className="w-20 h-28 object-cover rounded-lg"
+              />
+              
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold">{item.title}</h3>
+                <p className="text-gray-400">by {item.author}</p>
+                <div className="flex items-center mt-1">
+                  <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
+                  <span className="text-sm text-gray-300">{item.rating}</span>
+                </div>
+                <p className="text-purple-400 font-bold">${item.price}</p>
+              </div>
+
+              {/* Quantity Controls */}
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                  className="bg-gray-700 hover:bg-gray-600 p-1 rounded transition-colors duration-200"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+                <span className="w-8 text-center">{item.quantity}</span>
+                <button
+                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                  className="bg-gray-700 hover:bg-gray-600 p-1 rounded transition-colors duration-200"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Subtotal */}
+              <div className="text-right">
+                <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+              </div>
+
+              {/* Remove Button */}
+              <button
+                onClick={() => removeFromCart(item.id)}
+                className="bg-red-600 hover:bg-red-700 p-2 rounded-lg transition-colors duration-200"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Cart Summary */}
+        <div className="bg-gray-800 rounded-lg p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Total: ${getTotalPrice().toFixed(2)}</h2>
+            <p className="text-gray-400">
+              {cart.reduce((total, item) => total + item.quantity, 0)} items
+            </p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              onClick={onNavigateBack}
+              className="flex-1 bg-gray-700 hover:bg-gray-600 px-6 py-3 rounded-lg transition-colors duration-200 text-center"
+            >
+              Continue Shopping
+            </button>
+            <button
+              className="flex-1 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
+              onClick={() => alert('Proceeding to checkout... (Demo)')}
+            >
+              <CreditCard className="w-5 h-5" />
+              <span>Proceed to Buy</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main App Component
+const DashApp = () => {
+  const [currentPage, setCurrentPage] = useState('dashboard');
+
+  const navigateToCart = () => setCurrentPage('cart');
+  const navigateBack = () => setCurrentPage('dashboard');
+
+  return (
+    <CartProvider>
+      <div className="min-h-screen bg-gray-900">
+        {currentPage === 'dashboard' ? (
+          <Dashboard onNavigateToCart={navigateToCart} />
+        ) : (
+          <CartPage onNavigateBack={navigateBack} />
+        )}
+      </div>
+    </CartProvider>
+  );
+};
+
+export default DashApp;

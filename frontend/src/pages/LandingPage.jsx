@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { ChevronDown, BookOpen, Users, Star, ArrowRight, Menu, X, Check, Mail, Phone, MapPin, Sun, Moon, Book, TrendingUp, Eye, Heart } from 'lucide-react';
 
 const BookExchangeLanding = () => {
@@ -21,15 +21,38 @@ const BookExchangeLanding = () => {
   };
 
   // Enhanced animated card component with hover effects
-  const AnimatedCard = ({ children, delay = 0, index = 0 }) => {
-    const [isVisible, setIsVisible] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
+ const AnimatedCard = ({ children, delay = 0 }) => {
+  const [isVisible, setIsVisible] = useState(true);
+  const cardRef = useRef(null);
+ const [isHovered, setIsHovered] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Delay the visibility by `delay` ms
+          setTimeout(() => {
+            setIsVisible(true);
+          }, delay);
 
-    useEffect(() => {
-      const timer = setTimeout(() => setIsVisible(true), delay);
-      return () => clearTimeout(timer);
-    }, [delay]);
+          // Optional: Unobserve after it becomes visible
+          observer.unobserve(entry.target);
+        }
+      },
+      {
+        threshold: 0.1, // Adjust as needed
+      }
+    );
 
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+
+    return () => {
+      if (cardRef.current) {
+        observer.unobserve(cardRef.current);
+      }
+    };
+  }, [delay]);
     return (
       <div
         className={`transform transition-all duration-700 ease-out ${
