@@ -5,12 +5,14 @@ import NotFound from "./pages/NotFound";
 import AuthForm from "./pages/LoginRegisterUser";
 import ProductPage from "./components/ViewProduct";
 import DashApp from "./pages/Dashboard";
+import BookstoreEarningsDashboard from "./pages/YourEarnings";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<BookExchangeLanding />} /> 
+        <Route path="/YourEarnings" element={<BookstoreEarningsDashboard />} /> 
         <Route path="/login" element={<AuthForm/>} /> 
         <Route path="/ViewProduct" element={<ProductPage/>} /> 
         <Route path="/Dashboard" element={<DashApp/>} /> 
