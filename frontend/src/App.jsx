@@ -23,7 +23,6 @@ function App() {
         <Route path="/Orders" element={<OrderComponent/>} /> 
         <Route path="/login" element={<AuthForm/>} /> 
         <Route path="/ViewProduct" element={<ProductPage/>} /> 
-        <Route path="/Dashboard" element={<DashApp/>} /> 
         <Route path="/dashboard" element={<BookshopDashboard/>} /> 
         <Route path="/book/:bookId" element={<BookDetailsPage />} />
         <Route path="/cart" element={<CartPage />} />
