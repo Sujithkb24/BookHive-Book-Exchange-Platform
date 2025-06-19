@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema({
     unique: true,
     trim: true
   },
+  phone: {
+    type: Number,
+    default: 0,
+    trim: true
+  },
   age: {
     type: Number,
     default: 0,

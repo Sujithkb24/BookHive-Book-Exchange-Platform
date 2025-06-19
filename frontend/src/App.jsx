@@ -4,6 +4,11 @@ import BookExchangeLanding from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 import AuthForm from "./pages/LoginRegisterUser";
 import BookshopDashboard from "./pages/Dashboard";
+import BookDetailsPage from "./pages/BookDetail";
+import CartPage from "./pages/CartPage";
+import MyOrdersPage from "./pages/MyOrders";
+import ProfilePage from "./pages/ProfilePage";
+import OrdersToMe from "./pages/OrdersToMe";
 
 function App() {
   return (
@@ -11,7 +16,13 @@ function App() {
       <Routes>
         <Route path="/" element={<BookExchangeLanding />} /> 
         <Route path="/login" element={<AuthForm/>} /> 
-        <Route path="/Dashboard" element={<BookshopDashboard/>} /> 
+        <Route path="/dashboard" element={<BookshopDashboard/>} /> 
+        <Route path="/book/:bookId" element={<BookDetailsPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/myorders" element={<MyOrdersPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/orders-to-me" element={<OrdersToMe />} />
+        {/* Add more routes as needed */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
