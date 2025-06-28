@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import BookExchangeLanding from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
@@ -21,6 +21,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
+   
   );
 }
 
