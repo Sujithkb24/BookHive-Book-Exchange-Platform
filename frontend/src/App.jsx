@@ -7,6 +7,12 @@ import ProductPage from "./components/ViewProduct";
 import DashApp from "./pages/Dashboard";
 import BookstoreEarningsDashboard from "./pages/YourEarnings";
 import OrderComponent from "./pages/Orders";
+import BookshopDashboard from "./pages/Dashboard";
+import BookDetailsPage from "./pages/BookDetail";
+import CartPage from "./pages/CartPage";
+import MyOrdersPage from "./pages/MyOrders";
+import ProfilePage from "./pages/ProfilePage";
+import OrdersToMe from "./pages/OrdersToMe";
 
 function App() {
   return (
@@ -17,7 +23,13 @@ function App() {
         <Route path="/Orders" element={<OrderComponent/>} /> 
         <Route path="/login" element={<AuthForm/>} /> 
         <Route path="/ViewProduct" element={<ProductPage/>} /> 
-        <Route path="/Dashboard" element={<DashApp/>} /> 
+        <Route path="/dashboard" element={<BookshopDashboard/>} /> 
+        <Route path="/book/:bookId" element={<BookDetailsPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/myorders" element={<MyOrdersPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/orders-to-me" element={<OrdersToMe />} />
+        {/* Add more routes as needed */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

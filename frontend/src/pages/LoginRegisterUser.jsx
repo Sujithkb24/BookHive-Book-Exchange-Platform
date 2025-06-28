@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Add this at the top
+
 import {
   Eye,
   EyeOff,
@@ -12,6 +14,7 @@ import {
 } from "lucide-react";
 
 const AuthForm = () => {
+  const navigate = useNavigate(); // Initialize useNavigate hook
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -78,6 +81,8 @@ const AuthForm = () => {
         setLoginData({ email: "", password: "" });
 
         console.log("User logged in successfully, token:", data.token);
+
+        navigate("/dashboard"); // Navigate after successful login
       } else {
         setMessage({ text: data.message || "Login failed", type: "error" });
       }

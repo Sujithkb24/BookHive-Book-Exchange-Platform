@@ -1,7 +1,7 @@
 const BookOrder = require("../models/book-order-model");
 const Cart = require("../models/cart-model");
 const User = require("../models/user-model");
-
+const bookModel = require("../models/book-sell-model");
 
 const orderBook = async (req, res) => {
     const buyer = req.id; // Assuming the user is authenticated and their ID is stored in req.user
@@ -12,10 +12,8 @@ const orderBook = async (req, res) => {
         const user = await User.findById(buyer);
 
         if(user.token < tokensUsed)
-            return res.status(400).json({ message: "Insufficient tokens" });
-        
+            return res.status(201).json({ message: "Insufficient tokens", success: false });
        
-
         const newOrder = new BookOrder({
             buyer: buyer,
             seller: seller,
@@ -47,12 +45,35 @@ const getOrdersToMe = async (req, res) => {
 
     try {
         const orders = await BookOrder.find({ seller: userId })
-        
         if (!orders || orders.length === 0) {
-            return res.status(404).json({ message: "No orders for you" });
+            return res.status(404).json({ message: "No orders found" });
         }
 
-        res.status(200).json({ orders });
+        const allOrders = await Promise.all(
+            orders.map(async (element) => {
+                const buyerId = element.buyer;
+                const buyerInformation = await User.findById(buyerId);
+                const bookInformation = await bookModel.findById(element.bookId);
+                return {
+                    isDelivered : element.bookDevivered,
+                    orderId: element._id,
+                    buyerId: buyerId,
+                    buyerName: buyerInformation.username,
+                    buyerEmail: buyerInformation.email,
+                    buyerPhone: buyerInformation.phone,
+                    bookName: bookInformation.bookName,
+                    bookAuthor: bookInformation.authorName,
+                    bookPublisher: bookInformation.publisher,
+                    bookCondition: bookInformation.condition,
+                    bookPageCount: bookInformation.pageCount,
+                    isbn: bookInformation.isbn,
+                    orderDate: element.orderDate,
+                    tokensUsed: element.tokensUsed,
+                };
+            })
+        );
+        
+        return res.status(200).json({ orders: allOrders });
     } catch (error) {
         console.error("Error fetching orders:", error);
         res.status(500).json({ message: "Internal server error" });
@@ -66,7 +87,32 @@ const myOrders = async (req, res) => {
         if (!orders || orders.length === 0) {
             return res.status(404).json({ message: "No orders found" });
         }
-        res.status(200).json({ orders });
+
+        const allOrders = await Promise.all(
+            orders.map(async (element) => {
+                const sellerId = element.seller;
+                const sellerInformation = await User.findById(sellerId);
+                const bookInformation = await bookModel.findById(element.bookId);
+                return {
+                    isRecieved : element.bookRecieved,
+                    orderId: element._id,
+                    sellerId: sellerId,
+                    sellerName: sellerInformation.username,
+                    sellerEmail: sellerInformation.email,
+                    sellerPhone: sellerInformation.phone,
+                    bookName: bookInformation.bookName,
+                    bookAuthor: bookInformation.authorName,
+                    bookPublisher: bookInformation.publisher,
+                    bookCondition: bookInformation.condition,
+                    bookPageCount: bookInformation.pageCount,
+                    isbn: bookInformation.isbn,
+                    orderDate: element.orderDate,
+                    tokensUsed: element.tokensUsed,
+                };
+            })
+        );
+        
+        return res.status(200).json({ orders: allOrders });
     } catch (error) {
         console.error("Error fetching orders:", error);
         res.status(500).json({ message: "Internal server error" });
@@ -78,13 +124,14 @@ const updateRecieved = async (req, res) => {
     const orderId = req.body.orderId;
     
     try {
+        console.log("HOOOOOOOOOOOOOO")
         const order = await BookOrder.findById(orderId);
         if (!order) {
             return res.status(404).json({ message: "Order not found" });
         }   
         
         if (!order.bookDevivered) {
-            return res.status(400).json({ message: "Order cannot be marked as received before delivery" });
+            return res.status(200).json({ message: "Order cannot be marked as received before delivery", success: false });
         }
 
         order.bookRecieved = true;
@@ -127,6 +174,7 @@ const orderCancelBySeller = async (req, res) => {
     
     try {
         const order = await BookOrder.findById(orderId);
+        console.log(order);
         if (!order) {
             return res.status(404).json({ message: "Order not found" });
         }
@@ -140,8 +188,8 @@ const orderCancelBySeller = async (req, res) => {
         buyer.token += order.tokensUsed; // Refund tokens to the buyer
         await buyer.save();
 
-        await BookOrder.deleteOne({ _id: orderId });
-        res.status(200).json({ message: "Order cancelled successfully" });
+        await BookOrder.deleteOne({ _id: order._id });
+        return res.status(200).json({ message: "Order cancelled successfully" });
     }
     catch (error) {
         console.error("Error cancelling order:", error);

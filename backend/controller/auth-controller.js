@@ -51,7 +51,7 @@ const login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid password', success: false });
     } 
     // Generate a JWT token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' });
     // Respond with success
     res.status(200).json({ message: 'Login successful', token, success: true });
   }
@@ -85,6 +85,63 @@ const additionalInfo = async (req, res) => {
         res.status(500).json({ message: 'Internal server error', success: false });
     }   
 }
+
+const getUserDetails = async (req, res) => {
+  const userId = req.id;
+  try {
+    // Find the user by ID
+    const user = await User.findById(userId).select('-password'); // Exclude password from response
+    if (!user) {
+      return res.status(404).json({ message: 'User not found', success: false });
+    }
+    // Respond with user details
+    const userDetails = {
+      username: user.username,
+      nickname: user.nickname || 'Anonymous',
+      email: user.email,
+      phone:  user.phone || 0,
+      age: user.age || 0,
+      gender: user.gender || 'Not specified',
+      token: user.token || 0,
+  }
+    return res.status(200).json({ profile: userDetails, success: true });
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    return res.status(500).json({ message: 'Internal server error', success: false });
+  }
+}
+
+const updateUserDetails = async (req, res) => {
+  const userId = req.id;  
+  const { nickname, phone, age, username, email, token, gender } = req.body;
+  try {
+    // Find the user by ID
+    const user = await User.findById(userId);
+    if (!user) {  
+      return res.status(404).json({ message: 'User not found', success: false });
+    }
+    // Update the user's details
+    user.nickname = nickname || user.nickname;
+    user.phone = phone || user.phone;
+    user.age = age || user.age;
+
+    user.username = username || user.username;
+    user.email = email || user.email;
+    user.token = token || user.token;
+    
+    user.gender = gender || user.gender
+
+    // Save the updated user
+    await user.save();
+
+    // Respond with success
+    res.status(200).json({ message: 'User details updated successfully', success: true });
+  } catch (error) {
+    console.error('Error updating user details:', error);
+    res.status(500).json({ message: 'Internal server error', success: false });
+  } 
+}
+
 
 const reportUser = async (req, res) => {
   const { userId } = req.body;
@@ -129,20 +186,23 @@ const addToCart = async (req, res) => {
       const newCart = new Cart({
         userId,
         items: [bookId],
-        totalPrice: 0 // Initialize total price to 0
       });
 
       await newCart.save();
     }
 
     
-    else if(cart.items.length > 0) {
+    else if(cart.items.length >= 0) {
       // If the cart already exists, add the book to the existing cart
-      
+      if(cart.items.includes(bookId)) {
+      // If the book is already in the cart, return a message
+      return res.status(400).json({ message: 'Book already exists in the cart', success: false });
+    }
       cart.items.push(bookId);
       await cart.save();
       
     }
+    console.log(cart);
     return res.status(201).json({ message: 'Book added to cart successfully', success: true });
   
 }catch (error) {
@@ -167,8 +227,9 @@ const getallCartItems = async (req, res) => {
             isbn: book.isbn,
             id: book._id,
             bookName: book.bookName,
-            author: book.author,
+            author: book.authorName,
             tokens: book.token,
+            seller: book.sellerUserId,
           };
         }
         return null; // or filter it out later
@@ -177,6 +238,7 @@ const getallCartItems = async (req, res) => {
 
     // Remove null values if any books were not found
     const filteredBooks = bookDetails.filter(book => book !== null);
+    console.log(filteredBooks);
 
     res.status(200).json({ books: filteredBooks, success: true });
   } catch (error) {
@@ -186,4 +248,4 @@ const getallCartItems = async (req, res) => {
 };
 
 
-module.exports = {register, login, additionalInfo, reportUser, addToCart, getallCartItems};
+module.exports = {updateUserDetails, getUserDetails,register, login, additionalInfo, reportUser, addToCart, getallCartItems};
