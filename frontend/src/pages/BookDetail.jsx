@@ -3,7 +3,6 @@ import { Heart, ShoppingCart, Star, User, BookOpen, Hash, DollarSign, Package, C
 import Navbar from '../components/navbar';
 import { useParams } from 'react-router-dom';
 
-
 const BookDetailsPage = () => {
   const [bookData, setBookData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -11,31 +10,32 @@ const BookDetailsPage = () => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [imageError, setImageError] = useState({});
 
-  const { bookId } = useParams(); // Get bookId from URL parameters
-  console.log('Book ID from URL:', bookId); // Debugging line to check bookId
+  // For demo purposes - in real app, get from useParams()
+  const bookIdToUse = useParams().bookId// Replace with actual book ID or use a default for testing
+  console.log('Book ID:', bookIdToUse);
 
-  // Get bookId from URL parameters
-  const bookImages = [
+  // Fallback images for when no images are available
+  const fallbackImages = [
     "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop",
     "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=600&fit=crop",
     "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=600&fit=crop"
   ];
 
-  const [selectedImage, setSelectedImage] = useState(0);
-
   useEffect(() => {
     fetchBookDetails();
-  }, [bookId]);
+  }, [bookIdToUse]);
 
   const fetchBookDetails = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:3000/api/sell/getsellbyid/${bookId}`, {
+      const response = await fetch(`http://localhost:3000/api/sell/getsellbyid/${bookIdToUse}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored in localStorage    
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
       
@@ -55,17 +55,14 @@ const BookDetailsPage = () => {
 
   const handleAddToCart = async () => {
     setIsAddingToCart(true);
-    
-    // Simulate API call
-    
 
     const response = await fetch(`http://localhost:3000/api/auth/addtocart`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored in localStorage
-        },
-        body: JSON.stringify({ bookId })
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ bookId: bookIdToUse })
     });
     
     const data = await response.json();
@@ -73,28 +70,57 @@ const BookDetailsPage = () => {
     if(!data.success) {
       alert(data.message);
       setIsAddingToCart(false);
-      
-    }
-    else{
+    } else {
       alert('Book added to cart successfully!');
       setIsAddingToCart(false);
     }
-
   };
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
   };
 
+  const handleImageError = (index) => {
+    setImageError(prev => ({
+      ...prev,
+      [index]: true
+    }));
+  };
+
   const getConditionColor = (condition) => {
-    switch(condition.toLowerCase()) {
+    switch(condition?.toLowerCase()) {
       case 'excellent': return 'text-green-600 bg-green-100';
       case 'good': return 'text-blue-600 bg-blue-100';
-      case 'fair': return 'text-yellow-600 bg-yellow-100';
+      case 'average': return 'text-yellow-600 bg-yellow-100';
       case 'poor': return 'text-red-600 bg-red-100';
       default: return 'text-gray-600 bg-gray-100';
     }
   };
+
+  // Get images to display (book images or fallback)
+  const getDisplayImages = () => {
+    if (!bookData?.sell) return fallbackImages;
+    
+    const bookImages = bookData.sell.images;
+    if (!bookImages || bookImages.length === 0) {
+      return fallbackImages;
+    }
+    
+    return bookImages;
+  };
+
+  const displayImages = getDisplayImages();
+  const hasBookImages = bookData?.sell?.images && bookData.sell.images.length > 0;
+
+  // Fallback component for broken images
+  const ImageFallback = ({ alt, className }) => (
+    <div className={`${className} bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center`}>
+      <div className="text-center">
+        <BookOpen className="h-16 w-16 text-indigo-400 mx-auto mb-2" />
+        <p className="text-sm text-gray-500">{alt}</p>
+      </div>
+    </div>
+  );
 
   if (loading) {
     return (
@@ -133,25 +159,79 @@ const BookDetailsPage = () => {
             {/* Image Gallery */}
             <div className="lg:w-1/2 p-8">
               <div className="space-y-4">
-                <div className="aspect-[3/4] bg-gray-100 rounded-xl overflow-hidden">
-                  <img
-                    src={bookImages[selectedImage]}
-                    alt={sell.bookName}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                  />
+                {/* Main Image */}
+                <div className="aspect-[3/4] bg-gray-100 rounded-xl overflow-hidden relative">
+                  {imageError[selectedImage] ? (
+                    <ImageFallback 
+                      alt={sell.bookName} 
+                      className="w-full h-full"
+                    />
+                  ) : (
+                    <img
+                      src={displayImages[selectedImage]}
+                      alt={sell.bookName}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      onError={() => handleImageError(selectedImage)}
+                    />
+                  )}
+                  
+                  {/* Image type indicator */}
+                  {!hasBookImages && (
+                    <div className="absolute top-3 left-3">
+                      <span className="bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
+                        Sample Image
+                      </span>
+                    </div>
+                  )}
+                  
+                  {/* Image count */}
+                  <div className="absolute bottom-3 right-3">
+                    <span className="bg-black/50 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
+                      {selectedImage + 1} / {displayImages.length}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex space-x-2">
-                  {bookImages.map((img, index) => (
+
+                {/* Thumbnail Images */}
+                <div className="flex space-x-2 overflow-x-auto pb-2">
+                  {displayImages.map((img, index) => (
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
-                      className={`w-20 h-24 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                        selectedImage === index ? 'border-blue-600 ring-2 ring-blue-200' : 'border-gray-200 hover:border-gray-300'
+                      className={`flex-shrink-0 w-20 h-24 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                        selectedImage === index 
+                          ? 'border-blue-600 ring-2 ring-blue-200' 
+                          : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      {imageError[index] ? (
+                        <ImageFallback 
+                          alt={`${sell.bookName} ${index + 1}`} 
+                          className="w-full h-full"
+                        />
+                      ) : (
+                        <img 
+                          src={img} 
+                          alt={`${sell.bookName} ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={() => handleImageError(index)}
+                        />
+                      )}
                     </button>
                   ))}
+                </div>
+
+                {/* Image Info */}
+                <div className="text-center">
+                  {hasBookImages ? (
+                    <p className="text-sm text-green-600 font-medium">
+                      ✓ Actual book images uploaded by seller
+                    </p>
+                  ) : (
+                    <p className="text-sm text-gray-500">
+                      📷 No images uploaded - showing sample book images
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -166,10 +246,8 @@ const BookDetailsPage = () => {
                   
                   <div className="flex items-center space-x-4 mb-4">
                     <div className="flex items-center">
-
-                      
+                      {/* Rating stars or other info can go here */}
                     </div>
-                    
                   </div>
                 </div>
 
@@ -240,11 +318,24 @@ const BookDetailsPage = () => {
                     } shadow-lg hover:shadow-xl`}
                   >
                     <div className="flex items-center justify-center">
-                      Add to cart
+                      <ShoppingCart className="h-5 w-5 mr-2" />
+                      {isAddingToCart ? 'Adding to Cart...' : 'Add to Cart'}
                     </div>
                   </button>
                   
-                  
+                  <button
+                    onClick={toggleFavorite}
+                    className={`w-full py-3 px-6 rounded-xl font-medium border-2 transition-all duration-300 ${
+                      isFavorite
+                        ? 'border-red-500 text-red-500 bg-red-50'
+                        : 'border-gray-300 text-gray-700 hover:border-gray-400'
+                    }`}
+                  >
+                    <div className="flex items-center justify-center">
+                      <Heart className={`h-5 w-5 mr-2 ${isFavorite ? 'fill-current' : ''}`} />
+                      {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+                    </div>
+                  </button>
                 </div>
 
                 {/* Additional Info */}
@@ -254,6 +345,16 @@ const BookDetailsPage = () => {
                     This book is available through our token exchange system. Use your earned tokens to get this book!
                   </p>
                 </div>
+
+                {/* Image Upload Info */}
+                {hasBookImages && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-green-800 mb-2">📸 Verified Images</h4>
+                    <p className="text-green-700 text-sm">
+                      This seller has uploaded {sell.images.length} actual photo{sell.images.length > 1 ? 's' : ''} of the book.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

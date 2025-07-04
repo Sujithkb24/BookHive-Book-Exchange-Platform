@@ -16,7 +16,6 @@ const bookSellSchema = new mongoose.Schema({
     },
     pageCount: {
         type: Number,
-        required: true,
         trim: true
     },
     sellerUserId: {
@@ -38,8 +37,26 @@ const bookSellSchema = new mongoose.Schema({
         type: String,
         required: true,
         default: 'Average'
+    },
+    images: [{
+        type: String, // Store Cloudinary URLs
+        trim: true
+    }],
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
     }
 })
+
+// Update the updatedAt field before saving
+bookSellSchema.pre('save', function(next) {
+    this.updatedAt = Date.now();
+    next();
+});
 
 const BookSell = mongoose.model('BookSell', bookSellSchema);
 
