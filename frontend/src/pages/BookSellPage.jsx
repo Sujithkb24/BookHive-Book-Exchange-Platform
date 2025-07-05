@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef,useState } from 'react';
 import { BookOpen, Search, Wand2, Save, AlertCircle, CheckCircle, Hash, User, FileText, Package, DollarSign, Upload, X, Image } from 'lucide-react';
 import Navbar from '../components/navbar';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 const BookSellPage = () => {
   const [inputMode, setInputMode] = useState('auto'); // 'auto' or 'manual'
@@ -32,6 +33,109 @@ const BookSellPage = () => {
     pageCount: false,
     description: false
   });
+
+
+   const textRef = useRef(null);
+  const subtextRef = useRef(null);
+  const imageRef = useRef(null);
+
+  useEffect(() => {
+    // GSAP-style animation for main text
+    if (textRef.current) {
+      textRef.current.style.opacity = '0';
+      textRef.current.style.transform = 'translateX(-100px)';
+      
+      const animateText = () => {
+        let opacity = 0;
+        let translateX = -100;
+        
+        const step = () => {
+          opacity += 0.05;
+          translateX += 5;
+          
+          if (opacity >= 1) {
+            opacity = 1;
+            translateX = 0;
+          }
+          
+          textRef.current.style.opacity = opacity;
+          textRef.current.style.transform = `translateX(${translateX}px)`;
+          
+          if (opacity < 1) {
+            requestAnimationFrame(step);
+          }
+        };
+        
+        requestAnimationFrame(step);
+      };
+      
+      setTimeout(animateText, 200);
+    }
+
+    // Animate subtext
+    if (subtextRef.current) {
+      subtextRef.current.style.opacity = '0';
+      subtextRef.current.style.transform = 'translateX(-50px)';
+      
+      const animateSubtext = () => {
+        let opacity = 0;
+        let translateX = -50;
+        
+        const step = () => {
+          opacity += 0.03;
+          translateX += 2.5;
+          
+          if (opacity >= 1) {
+            opacity = 1;
+            translateX = 0;
+          }
+          
+          subtextRef.current.style.opacity = opacity;
+          subtextRef.current.style.transform = `translateX(${translateX}px)`;
+          
+          if (opacity < 1) {
+            requestAnimationFrame(step);
+          }
+        };
+        
+        requestAnimationFrame(step);
+      };
+      
+      setTimeout(animateSubtext, 600);
+    }
+
+    // Animate image placeholder
+    if (imageRef.current) {
+      imageRef.current.style.opacity = '0';
+      imageRef.current.style.transform = 'translateX(50px)';
+      
+      const animateImage = () => {
+        let opacity = 0;
+        let translateX = 50;
+        
+        const step = () => {
+          opacity += 0.04;
+          translateX -= 2;
+          
+          if (opacity >= 1) {
+            opacity = 1;
+            translateX = 0;
+          }
+          
+          imageRef.current.style.opacity = opacity;
+          imageRef.current.style.transform = `translateX(${translateX}px)`;
+          
+          if (opacity < 1) {
+            requestAnimationFrame(step);
+          }
+        };
+        
+        requestAnimationFrame(step);
+      };
+      
+      setTimeout(animateImage, 800);
+    }
+  }, []);
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -331,25 +435,73 @@ const BookSellPage = () => {
     <>
       <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center mb-4">
-              <BookOpen className="h-12 w-12 text-indigo-600 mr-3" />
-              <h1 className="text-4xl font-bold text-gray-900">Sell Your Book</h1>
+        <div className="max-w-7xl ml-7 sm:px-6">
+        <div className="mb-3 py-8">
+      <div className="mx-auto sm:px-6">
+        {/* Header */}
+        <div className="relative overflow-hidden bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-700 rounded-2xl shadow-2xl">
+          
+          
+          <div className="relative px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+              {/* Left side - Text content */}
+              <div className="space-y-6">
+                <h2 
+                  ref={textRef}
+                  className="text-4xl md:text-5xl lg:text-6xl font-bold text-amber-900 leading-tight"
+                >
+                  Sell Your Book
+                </h2>
+                
+                <div ref={subtextRef} className="space-y-4 text-amber-900">
+                  <p className="text-xl md:text-2xl font-semibold">
+                    Transform Your Story Into Success
+                  </p>
+                  <p className="text-lg leading-relaxed">
+                    Join thousands of authors who've turned their passion into profit. 
+                    Our platform helps you reach readers worldwide, maximize your royalties, 
+                    and build a sustainable writing career.
+                  </p>
+                  
+                </div>
+              </div>
+              
+              {/* Right side - Image placeholder */}
+              <div 
+                ref={imageRef}
+                className="relative"
+              >
+                <div>
+                  <div className="w-full h-1/3 flex items-center justify-center">
+                    
+                      
+                      <DotLottieReact
+      src="https://lottie.host/b2268625-9c87-499e-81df-aa61ef2cd252/DS3stw17rb.lottie"
+      loop
+      autoplay
+    />
+                    
+                  </div>
+                </div>
+                
+                
+              </div>
             </div>
-            <p className="text-xl text-gray-600">Add your book to the marketplace and earn tokens</p>
           </div>
-
+          
+          
+        </div>
+      </div>
+    </div>
           {/* Mode Selection */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+          <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border max-w-7xl border-gray-100">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">How would you like to add your book?</h2>
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => handleModeChange('auto')}
                 className={`flex-1 p-4 rounded-xl border-2 transition-all duration-300 ${
                   inputMode === 'auto'
-                    ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                    ? 'border-amber-700 bg-amber-100 text-amber-600'
                     : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -362,7 +514,7 @@ const BookSellPage = () => {
                 onClick={() => handleModeChange('manual')}
                 className={`flex-1 p-4 rounded-xl border-2 transition-all duration-300 ${
                   inputMode === 'manual'
-                    ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                    ? 'border-amber-700 bg-amber-100 text-amber-600'
                     : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300'
                 }`}
               >
@@ -525,7 +677,11 @@ const BookSellPage = () => {
                   {/* Token Price */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                      <DollarSign className="w-4 h-4 mr-2" />
+                      <img
+                  src="/fire.png"
+                  alt="BookHive"
+                  className="w-5 h-5 rounded-xl shadow-sm"
+                />
                       Token Price
                     </label>
                     <input
@@ -632,7 +788,7 @@ const BookSellPage = () => {
                 <button
                   onClick={handleSubmit}
                   disabled={loading.submit || loading.imageUpload}
-                  className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-12 py-4 rounded-xl font-semibold text-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg hover:shadow-xl flex items-center justify-center gap-3 mx-auto min-w-[200px]"
+                  className="bg-gradient-to-r from-amber-500 to-amber-800 text-white px-12 py-4 rounded-xl font-semibold text-lg hover:from-amber-700 hover:to-amber-900transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg hover:shadow-xl flex items-center justify-center gap-3 mx-auto min-w-[200px]"
                 >
                   {loading.submit || loading.imageUpload ? (
                     <>
@@ -665,7 +821,11 @@ const BookSellPage = () => {
             
             <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
               <h3 className="font-semibold text-gray-900 mb-2 flex items-center">
-                <DollarSign className="w-5 h-5 mr-2 text-green-600" />
+                <img
+                  src="/fire.png"
+                  alt="BookHive"
+                  className="w-5 h-5 rounded-xl shadow-sm"
+                />
                 Token Pricing
               </h3>
               <p className="text-gray-600 text-sm">

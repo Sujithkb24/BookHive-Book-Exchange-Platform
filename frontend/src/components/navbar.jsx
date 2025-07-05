@@ -54,7 +54,7 @@ import {
   FileText,
   Users
 } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom';
 const NavBar = ({ currentPath = '/dashboard', onNavigate = () => {} }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -63,13 +63,14 @@ const NavBar = ({ currentPath = '/dashboard', onNavigate = () => {} }) => {
   const [cartCount, setCartCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [notifications, setNotifications] = useState([]);
-
+ const navigate = useNavigate();
   // Navigation helper
-  const navigate = (path) => {
+  const navigateto = (path) => {
     onNavigate(path);
     setIsMenuOpen(false);
     setIsProfileDropdownOpen(false);
     setIsNotificationOpen(false);
+    navigate(path)
   };
 
   // Mock user data - replace with actual user fetch
@@ -154,7 +155,7 @@ const NavBar = ({ currentPath = '/dashboard', onNavigate = () => {} }) => {
     { name: 'Browse Books', path: '/browse', icon: Grid3X3 },
     { name: 'My Orders', path: '/myorders', icon: Package },
     { name: 'Orders to Me', path: '/orders-to-me', icon: FileText },
-    { name: 'Sell Book', path: '/sell-book', icon: Plus },
+    { name: 'Sell Book', path: '/addsell', icon: Plus },
     { name: 'Earnings', path: '/YourEarnings', icon: TrendingUp },
   ];
 
@@ -211,7 +212,7 @@ const NavBar = ({ currentPath = '/dashboard', onNavigate = () => {} }) => {
             {navigationItems.map((item) => (
               <button
                 key={item.name}
-                onClick={() => navigate(item.path)}
+                onClick={() => navigateto(item.path)}
                 className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   isActiveRoute(item.path)
                     ? 'bg-purple-100 text-amber-600 shadow-sm'

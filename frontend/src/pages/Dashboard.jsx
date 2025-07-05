@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { BookOpen, Eye, Search, Filter } from 'lucide-react';
 import Navbar from '../components/navbar';
 import { useNavigate } from 'react-router-dom';
-
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+    import { gsap } from 'gsap';
 const BooksDashboard = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,6 +13,36 @@ const BooksDashboard = () => {
   const [imageErrors, setImageErrors] = useState({});
   const navigate = useNavigate();
 
+ 
+
+
+  const titleRef = useRef(null);
+  const subtitleRef = useRef(null);
+  const descriptionRef = useRef(null);
+  const buttonRef = useRef(null);
+
+ useEffect(() => {
+  const elements = [
+    titleRef.current,
+    subtitleRef.current,
+    descriptionRef.current,
+    buttonRef.current
+  ].filter(el => el !== null); // Filter out nulls
+
+  if (elements.length > 0) {
+    gsap.fromTo(
+      elements,
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: 'power3.out'
+      }
+    );
+  }
+}, []);
   // Fetch books from backend
   const backendapi = 'http://localhost:3000';
   useEffect(() => {
@@ -143,18 +174,63 @@ const BooksDashboard = () => {
     <>
       <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-        {/* Header */}
-        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-40">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Book Marketplace</h1>
-              <p className="text-xl text-gray-600">Discover and exchange amazing books with fellow readers</p>
-            </div>
+      
+    <div className="min-h-[600px] bg-gradient-to-br from-amber-50 to-orange-100 flex items-center  px-8">
+      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+        
+       
+        <div className="flex justify-center">
+          <div className="h-[500px] w-[1000px]">
+           
+            <DotLottieReact
+      src="https://lottie.host/04299fbe-6092-47c1-8c2d-9a18274a0533/frsbwlwKN6.lottie"
+      loop
+      autoplay
+    />
           </div>
         </div>
 
+      
+        <div className="space-y-6">
+          <h1 
+            ref={titleRef}
+            className="text-5xl lg:text-6xl font-bold text-amber-900 transition-all duration-1000 ease-out"
+          >
+            Your next story 
+            <span className="block text-orange-700">starts here</span>
+          </h1>
+          
+          <h2 
+            ref={subtitleRef}
+            className="text-2xl text-amber-700 font-medium transition-all duration-1000 ease-out"
+          >
+           A smarter way to Share Books
+          </h2>
+          
+          <p 
+            ref={descriptionRef}
+            className="text-lg text-amber-800/80 leading-relaxed transition-all duration-1000 ease-out"
+          >
+            Set your stories free. By listing your book, you’re giving someone else the opportunity to explore, learn, and be inspired
+          </p>
+          
+          <div 
+            ref={buttonRef}
+            className="pt-4 transition-all duration-1000 ease-out"
+          >
+            <button className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+              Add your Book
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+     
+
+
+
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className=" mx-auto px-4 bg-orange-100 sm:px-6 lg:px-8 py-8">
           {/* Search and Filter Bar */}
           <div className="mb-8">
             <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
@@ -240,6 +316,7 @@ const BooksDashboard = () => {
           )}
         </div>
       </div>
+
     </>
   );
 };
