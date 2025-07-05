@@ -1,13 +1,13 @@
-import React, { Suspense, lazy } from 'react';
+import { useState ,useEffect} from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import BookExchangeLanding from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 import AuthForm from "./pages/LoginRegisterUser";
 // import ProductPage from "./components/ViewProduct";
 import BooksDashboard from "./pages/Dashboard";
-
+import {  useLocation} from 'react-router-dom';
 import BookstoreEarningsDashboard from "./pages/YourEarnings";
-// 
+import Loader from "./ui/Loader";
 import BookshopDashboard from "./pages/Dashboard";
 import BookDetailsPage from "./pages/BookDetail";
 import CartPage from "./pages/CartPage";
@@ -18,12 +18,27 @@ import MyListedBooksPage from "./pages/ListedBookPage";
 import BookSellPage from "./pages/BookSellPage";
 
 function App() {
+   const location = useLocation();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+
+    const minLoadTime = setTimeout(() => {
+      setLoading(false);
+    }, 1500); 
+
+    return () => clearTimeout(minLoadTime);
+  }, [location]);
   return (
-    <Router>
+     <div>
+      {loading && <Loader />}
+    
+      
       <Routes>
         <Route path="/" element={<BookExchangeLanding />} /> 
         <Route path="/YourEarnings" element={<BookstoreEarningsDashboard />} /> 
-        {/*  */}
+      
         <Route path="/login" element={<AuthForm/>} /> 
    
         <Route path="/dashboard" element={<BookshopDashboard/>} /> 
@@ -36,11 +51,11 @@ function App() {
         <Route path="/orders-to-me" element={<OrdersToMe />} />
         <Route path="/addsell" element={<BookSellPage />} />
         <Route path="/mylistedsells" element={<MyListedBooksPage />} />
-        {/* Add more routes as needed */}
+        
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </Router>
-   
+    
+   </div>
   );
 }
 

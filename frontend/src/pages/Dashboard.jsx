@@ -13,6 +13,10 @@ const BooksDashboard = () => {
   const [imageErrors, setImageErrors] = useState({});
   const navigate = useNavigate();
 
+
+  const handleClick = () => {
+    navigate('/addsell');
+  };
  
 
 
@@ -218,7 +222,9 @@ const BooksDashboard = () => {
             ref={buttonRef}
             className="pt-4 transition-all duration-1000 ease-out"
           >
-            <button className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+            <button 
+            onClick={handleClick}
+            className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
               Add your Book
             </button>
           </div>
