@@ -70,14 +70,14 @@ const BookExchangeLanding = () => {
   };
 
   const GradientText = ({ children, className = "" }) => (
-    <span className={`bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 bg-clip-text text-transparent ${className}`}>
+    <span className={`bg-gradient-to-r from-orange-400 via-yellow-500 to-orange-600 bg-clip-text text-transparent ${className}`}>
       {children}
     </span>
   );
 
   const FloatingBook = ({ delay = 0, size = "w-8 h-8", position = "top-1/4 left-1/4" }) => (
     <div 
-      className={`absolute ${position} ${size} text-purple-400/20 animate-float`}
+      className={`absolute ${position} ${size} ${isDarkMode ? 'text-orange-400/30' : 'text-orange-600/40'} animate-float`}
       style={{ animationDelay: `${delay}ms` }}
     >
       <Book className="w-full h-full" />
@@ -89,7 +89,9 @@ const BookExchangeLanding = () => {
     <div
       className="absolute w-64 h-64 rounded-full opacity-10 blur-3xl animate-pulse"
       style={{
-        background: 'linear-gradient(45deg, #8B5CF6, #EC4899, #3B82F6)',
+        background: isDarkMode 
+          ? 'linear-gradient(45deg, #FF7D29, #FFBF78, #7B4019)'
+          : 'linear-gradient(45deg, #FF7D29, #FFBF78, #FFA500)',
         animation: `float ${duration}s ease-in-out infinite`,
         animationDelay: `${delay}s`,
       }}
@@ -140,10 +142,12 @@ const BookExchangeLanding = () => {
     }, [displayText, isDeleting, isPaused, currentSlogan, slogans]);
     
     return (
-      <GradientText className="text-6xl md:text-8xl">
-        {displayText}
-        <span className="animate-pulse text-pink-400">|</span>
-      </GradientText>
+      <div className="min-h-[120px] flex items-center justify-center">
+        <GradientText className="text-6xl md:text-8xl">
+          {displayText}
+          <span className={`animate-pulse ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>|</span>
+        </GradientText>
+      </div>
     );
   };
 
@@ -159,11 +163,11 @@ const BookExchangeLanding = () => {
               ? 'text-yellow-400 fill-yellow-400' 
               : i < rating 
               ? 'text-yellow-400 fill-yellow-400 opacity-50' 
-              : 'text-gray-400'
+              : isDarkMode ? 'text-gray-600' : 'text-gray-400'
           } transition-colors duration-200`}
         />
       ))}
-      <span className="text-sm text-gray-400 ml-1">{rating}</span>
+      <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} ml-1`}>{rating}</span>
     </div>
   );
 
@@ -182,16 +186,21 @@ const BookExchangeLanding = () => {
     };
 
     // Generate unique gradient for each book
-    const gradients = [
-      'from-purple-500/30 via-pink-500/20 to-indigo-500/30',
-      'from-blue-500/30 via-teal-500/20 to-green-500/30',
-      'from-orange-500/30 via-red-500/20 to-pink-500/30',
-      'from-indigo-500/30 via-purple-500/20 to-pink-500/30'
+    const gradients = isDarkMode ? [
+      'from-orange-500/30 via-yellow-500/20 to-orange-600/30',
+      'from-yellow-500/30 via-orange-500/20 to-yellow-600/30',
+      'from-orange-600/30 via-yellow-400/20 to-orange-500/30',
+      'from-yellow-600/30 via-orange-400/20 to-yellow-500/30'
+    ] : [
+      'from-orange-400/40 via-yellow-400/30 to-orange-500/40',
+      'from-yellow-400/40 via-orange-400/30 to-yellow-500/40',
+      'from-orange-500/40 via-yellow-300/30 to-orange-400/40',
+      'from-yellow-500/40 via-orange-300/30 to-yellow-400/40'
     ];
 
     return (
       <AnimatedCard delay={index * 200} index={index}>
-        <div className="group relative bg-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/10 hover:border-purple-400/50 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-500/20 overflow-hidden">
+        <div className={`group relative ${isDarkMode ? 'bg-white/5' : 'bg-white/80'} backdrop-blur-xl rounded-3xl p-6 border ${isDarkMode ? 'border-white/10 hover:border-orange-400/50' : 'border-gray-200/50 hover:border-orange-500/50'} transition-all duration-500 hover:shadow-2xl ${isDarkMode ? 'hover:shadow-orange-500/20' : 'hover:shadow-orange-400/30'} overflow-hidden`}>
           {/* Animated background gradient */}
           <div className={`absolute inset-0 bg-gradient-to-br ${gradients[index % gradients.length]} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl`} />
           
@@ -230,21 +239,21 @@ const BookExchangeLanding = () => {
               </button>
             </div>
 
-            {/* Book info */}
+           {/* Book info */}
             <div className="space-y-3">
               <BookRating rating={book.rating} />
               
-              <h3 className="font-bold text-xl mb-2 group-hover:text-purple-300 transition-colors duration-300 line-clamp-2">
+              <h3 className={`font-bold text-xl mb-2 ${isDarkMode ? 'group-hover:text-orange-300' : 'group-hover:text-orange-600'} transition-colors duration-300 line-clamp-2`}>
                 {book.title}
               </h3>
               
-              <p className="text-gray-400 text-sm mb-3">by {book.author}</p>
+              <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} text-sm mb-3`}>by {book.author}</p>
               
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full">
+                <span className={`text-sm px-3 py-1 ${isDarkMode ? 'bg-orange-500/20 text-orange-300' : 'bg-orange-400/30 text-orange-700'} rounded-full`}>
                   {book.genre}
                 </span>
-                <div className="flex items-center gap-4 text-xs text-gray-500">
+                <div className={`flex items-center gap-4 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>
                   <div className="flex items-center gap-1">
                     <Users size={12} />
                     {book.exchanges}
@@ -260,7 +269,7 @@ const BookExchangeLanding = () => {
               <div className="flex gap-2">
                 <button 
                   onClick={handleView}
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 py-3 rounded-2xl font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 text-white group-hover:scale-105 flex items-center justify-center gap-2"
+                  className="flex-1 bg-gradient-to-r from-orange-500 to-yellow-500 py-3 rounded-2xl font-semibold hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-300 text-white group-hover:scale-105 flex items-center justify-center gap-2"
                 >
                   View Details
                   <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
@@ -274,20 +283,25 @@ const BookExchangeLanding = () => {
   };
 
   const themeClasses = {
-    bg: isDarkMode ? 'bg-gray-900' : 'bg-white',
+    bg: isDarkMode ? 'bg-gray-900' : 'bg-gray-50',
     text: isDarkMode ? 'text-white' : 'text-gray-900',
-    navBg: isDarkMode ? 'bg-gray-900/80' : 'bg-white/80',
+    navBg: isDarkMode ? 'bg-gray-900/90' : 'bg-white/90',
     navBorder: isDarkMode ? 'border-gray-800' : 'border-gray-200',
-    cardBg: isDarkMode ? 'bg-gray-800/50 backdrop-blur-sm' : 'bg-white/50 backdrop-blur-sm',
-    cardBorder: isDarkMode ? 'border-gray-700/50' : 'border-gray-300/50',
-    cardHover: isDarkMode ? 'hover:border-purple-500/50' : 'hover:border-purple-500/50',
-    textSecondary: isDarkMode ? 'text-gray-300' : 'text-gray-600',
-    textMuted: isDarkMode ? 'text-gray-400' : 'text-gray-500',
-    sectionBg: isDarkMode ? 'bg-gray-800/30' : 'bg-gray-50/30',
-    inputBg: isDarkMode ? 'bg-gray-700/50' : 'bg-gray-100/50',
+    cardBg: isDarkMode ? 'bg-gray-800/50 backdrop-blur-xl' : 'bg-white/80 backdrop-blur-xl',
+    cardBorder: isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50',
+    cardHover: isDarkMode ? 'hover:border-orange-500/50' : 'hover:border-orange-400/50',
+    textSecondary: isDarkMode ? 'text-gray-300' : 'text-gray-700',
+    textMuted: isDarkMode ? 'text-gray-400' : 'text-gray-600',
+    sectionBg: isDarkMode ? 'bg-gray-800/30' : 'bg-gray-100/30',
+    inputBg: isDarkMode ? 'bg-gray-700/50' : 'bg-gray-200/50',
     inputBorder: isDarkMode ? 'border-gray-600' : 'border-gray-300',
-    footerBg: isDarkMode ? 'bg-gray-900' : 'bg-gray-50',
-    footerBorder: isDarkMode ? 'border-gray-800' : 'border-gray-200'
+    footerBg: isDarkMode ? 'bg-gray-900' : 'bg-gray-100',
+    footerBorder: isDarkMode ? 'border-gray-800' : 'border-gray-200',
+    heroBg: isDarkMode ? 'bg-[#7b4019]' : 'bg-[#ffeea9]',
+    heroText: isDarkMode ? 'text-white' : 'text-[#7b4019]',
+    heroGradient: isDarkMode ? 'from-[#7b4019]/20 via-[#7b4019] to-[#ff7d29]/20' : 'from-[#ffbf78]/20 via-[#ffeea9] to-[#ff7d29]/20',
+    heroOrb1: isDarkMode ? 'bg-[#ff7d29]/10' : 'bg-[#ff7d29]/20',
+    heroOrb2: isDarkMode ? 'bg-[#ffbf78]/10' : 'bg-[#ffbf78]/20'
   };
 
   const roadmapData = [
@@ -336,13 +350,19 @@ const BookExchangeLanding = () => {
   const getStatusStyle = (status) => {
     switch (status) {
       case 'In Progress':
-        return 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-400 border border-yellow-500/30';
+        return isDarkMode 
+          ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-400 border border-yellow-500/30'
+          : 'bg-gradient-to-r from-yellow-400/30 to-orange-400/30 text-yellow-700 border border-yellow-500/40';
       case 'Planned':
-        return 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 text-blue-400 border border-blue-500/30';
+        return isDarkMode
+          ? 'bg-gradient-to-r from-orange-500/20 to-yellow-500/20 text-orange-400 border border-orange-500/30'
+          : 'bg-gradient-to-r from-orange-400/30 to-yellow-400/30 text-orange-700 border border-orange-500/40';
       case 'Research':
-        return 'bg-gradient-to-r from-gray-500/20 to-slate-500/20 text-gray-400 border border-gray-500/30';
+        return isDarkMode
+          ? 'bg-gradient-to-r from-yellow-600/20 to-orange-600/20 text-yellow-600 border border-yellow-600/30'
+          : 'bg-gradient-to-r from-yellow-500/30 to-orange-500/30 text-yellow-800 border border-yellow-600/40';
       default:
-        return 'bg-gray-500/20 text-gray-400';
+        return isDarkMode ? 'bg-gray-500/20 text-gray-400' : 'bg-gray-400/30 text-gray-700';
     }
   };
 
@@ -399,7 +419,7 @@ const BookExchangeLanding = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
               <img src='/favicon.png' className='w-[50px] h-[50px]' alt="BookHive Logo" />
-              <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-yellow-500 bg-clip-text text-transparent">
                 BookHive
               </span>
             </div>
@@ -409,7 +429,7 @@ const BookExchangeLanding = () => {
                 <a 
                   key={item}
                   href={`#${item.toLowerCase()}`}
-                  className={`${themeClasses.textSecondary} hover:text-purple-400 transition-colors duration-300 font-medium`}
+                  className={`${themeClasses.textSecondary} hover:text-orange-400 transition-colors duration-300 font-medium`}
                 >
                   {item}
                 </a>
@@ -417,13 +437,13 @@ const BookExchangeLanding = () => {
               
               <button
                 onClick={toggleDarkMode}
-                className={`p-2 rounded-full ${themeClasses.cardBg} ${themeClasses.cardBorder} border hover:border-purple-500/50 transition-all duration-300`}
+                className={`p-2 rounded-full ${themeClasses.cardBg} ${themeClasses.cardBorder} border hover:border-orange-500/50 transition-all duration-300`}
                 aria-label="Toggle dark mode"
               >
                 {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </button>
               
-              <button className="bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-2 rounded-full font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 text-white">
+              <button className="bg-gradient-to-r from-orange-500 to-yellow-500 px-6 py-2 rounded-full font-semibold hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-300 text-white">
                 Get Started
               </button>
             </div>
@@ -446,7 +466,7 @@ const BookExchangeLanding = () => {
               <a 
                 key={item}
                 href={`#${item.toLowerCase()}`}
-                className={`text-2xl font-semibold ${themeClasses.textSecondary} hover:text-purple-400 transition-colors`}
+                className={`text-2xl font-semibold ${themeClasses.textSecondary} hover:text-orange-400 transition-colors`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item}
@@ -454,7 +474,7 @@ const BookExchangeLanding = () => {
             ))}
             <button
               onClick={toggleDarkMode}
-              className={`flex items-center space-x-2 text-lg font-semibold ${themeClasses.textSecondary} hover:text-purple-400 transition-colors`}
+              className={`flex items-center space-x-2 text-lg font-semibold ${themeClasses.textSecondary} hover:text-orange-400 transition-colors`}
             >
               {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
@@ -464,26 +484,26 @@ const BookExchangeLanding = () => {
       )}
 
       {/* Hero Section */}
-      <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'} transition-colors duration-500`}>
+      <div className={`min-h-screen ${isDarkMode ? 'bg-[#7b4019] text-white' : 'bg-[#ffeea9] text-[#7b4019]'} transition-colors duration-500`}>
       {/* Theme Toggle */}
       <button 
         onClick={() => setIsDarkMode(!isDarkMode)}
-        className="fixed top-4 right-4 z-50 p-2 rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors"
+        className="fixed top-4 right-4 z-50 p-2 rounded-full bg-[#ff7d29] text-white hover:bg-[#7b4019] transition-colors"
       >
         {isDarkMode ? '☀️' : '🌙'}
       </button>
 
-      <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'} transition-colors duration-500`}>
+      <div className={`min-h-screen ${isDarkMode ? 'bg-[#7b4019] text-white' : 'bg-[#ffeea9] text-[#7b4019]'} transition-colors duration-500`}>
       
       {/* Hero Section */}
       <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Animated Background */}
-        <div className={`absolute inset-0 ${isDarkMode ? 'bg-gradient-to-br from-purple-900/20 via-gray-900 to-pink-900/20' : 'bg-gradient-to-br from-purple-100/20 via-gray-50 to-pink-100/20'} animate-gradient-shift`}></div>
+        <div className={`absolute inset-0 ${isDarkMode ? 'bg-gradient-to-br from-[#7b4019]/20 via-[#7b4019] to-[#ff7d29]/20' : 'bg-gradient-to-br from-[#ffbf78]/20 via-[#ffeea9] to-[#ff7d29]/20'} animate-gradient-shift`}></div>
         
         {/* Floating Orbs */}
         <div className="absolute inset-0">
-          <div className={`absolute top-1/4 left-1/4 w-72 h-72 ${isDarkMode ? 'bg-purple-500/10' : 'bg-purple-500/20'} rounded-full filter blur-3xl animate-pulse-slow`}></div>
-          <div className={`absolute bottom-1/4 right-1/4 w-96 h-96 ${isDarkMode ? 'bg-pink-500/10' : 'bg-pink-500/20'} rounded-full filter blur-3xl animate-pulse-slow`} style={{animationDelay: '1s'}}></div>
+          <div className={`absolute top-1/4 left-1/4 w-72 h-72 ${isDarkMode ? 'bg-[#ff7d29]/10' : 'bg-[#ff7d29]/20'} rounded-full filter blur-3xl animate-pulse-slow`}></div>
+          <div className={`absolute bottom-1/4 right-1/4 w-96 h-96 ${isDarkMode ? 'bg-[#ffbf78]/10' : 'bg-[#ffbf78]/20'} rounded-full filter blur-3xl animate-pulse-slow`} style={{animationDelay: '1s'}}></div>
         </div>
 
         {/* Floating Books */}
@@ -508,11 +528,11 @@ const BookExchangeLanding = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 animate-fade-in-delay-2">
-            <button className="group bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105 text-white">
+            <button className="group bg-gradient-to-r from-[#ff7d29] to-[#ffbf78] px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl hover:shadow-[#ff7d29]/25 transition-all duration-300 transform hover:scale-105 text-white">
               Start Trading Books
               <ArrowRight className="inline ml-2 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className={`px-8 py-4 rounded-full border-2 ${themeClasses.cardBorder} hover:border-purple-400 font-semibold transition-all duration-300 hover:bg-purple-500/10`}>
+            <button className={`px-8 py-4 rounded-full border-2 ${themeClasses.cardBorder} hover:border-[#ff7d29] font-semibold transition-all duration-300 hover:bg-[#ff7d29]/10`}>
               Watch Demo
             </button>
           </div>
@@ -525,7 +545,7 @@ const BookExchangeLanding = () => {
             ].map((stat, index) => (
               <AnimatedCard key={index} delay={index * 200}>
                 <div className={`${themeClasses.cardBg} backdrop-blur-xl rounded-2xl p-6 border ${themeClasses.cardBorder} ${themeClasses.cardHover} transition-all duration-300 hover:scale-105`}>
-                  <stat.icon className="h-8 w-8 text-purple-400 mb-4 mx-auto" />
+                  <stat.icon className="h-8 w-8 text-[#ff7d29] mb-4 mx-auto" />
                   <div className="text-3xl font-bold mb-2">{stat.number}</div>
                   <div className={themeClasses.textMuted}>{stat.label}</div>
                 </div>
@@ -600,21 +620,21 @@ const BookExchangeLanding = () => {
     </div>
 
       {/* About Section */}
-     <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'} transition-colors duration-500`}>
+     <div className={`min-h-screen ${isDarkMode ? 'bg-[#7b4019] text-white' : 'bg-[#ffeea9] text-[#7b4019]'} transition-colors duration-500`}>
       {/* Theme Toggle */}
       <button 
         onClick={() => setIsDarkMode(!isDarkMode)}
-        className="fixed top-4 right-4 z-50 p-2 rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors"
+        className="fixed top-4 right-4 z-50 p-2 rounded-full bg-[#ff7d29] text-white hover:bg-[#7b4019] transition-colors"
       >
         {isDarkMode ? '☀️' : '🌙'}
       </button>
 
       {/* About Section */}
-     <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'} transition-colors duration-500`}>
+     <div className={`min-h-screen ${isDarkMode ? 'bg-[#7b4019] text-white' : 'bg-[#ffeea9] text-[#7b4019]'} transition-colors duration-500`}>
       {/* Theme Toggle */}
       <button 
         onClick={() => setIsDarkMode(!isDarkMode)}
-        className="fixed top-4 right-4 z-50 p-2 rounded-full bg-purple-500 text-white hover:bg-purple-600 transition-colors"
+        className="fixed top-4 right-4 z-50 p-2 rounded-full bg-[#ff7d29] text-white hover:bg-[#7b4019] transition-colors"
       >
         {isDarkMode ? '☀️' : '🌙'}
       </button>
@@ -649,8 +669,8 @@ const BookExchangeLanding = () => {
                 ].map((item, index) => ( 
                   <div key={index} className="flex items-center space-x-3 animate-slide-in" style={{animationDelay: `${index * 200}ms`}}> 
                     <div className="relative">
-                      <Check className="h-5 w-5 text-green-400 animate-pulse-glow hover:scale-110 transition-transform duration-300" /> 
-                      <div className="absolute inset-0 bg-green-400/20 rounded-full animate-ping"></div>
+                      <Check className="h-5 w-5 text-[#ff7d29] animate-pulse-glow hover:scale-110 transition-transform duration-300" /> 
+                      <div className="absolute inset-0 bg-[#ff7d29]/20 rounded-full animate-ping"></div>
                     </div>
                     <span className={themeClasses.textSecondary}>{item}</span> 
                   </div> 
@@ -658,36 +678,36 @@ const BookExchangeLanding = () => {
               </div>
 
               {/* Founder's Quote */}
-              <div className={`mt-8 p-6 rounded-2xl border-l-4 border-purple-400 ${themeClasses.cardBg} backdrop-blur-xl`}>
+              <div className={`mt-8 p-6 rounded-2xl border-l-4 border-[#ff7d29] ${themeClasses.cardBg} backdrop-blur-xl`}>
                 <blockquote className={`text-lg italic ${themeClasses.textSecondary} mb-3`}>
                   "Stories should never be locked away. At BookHive, we believe every book has more than one reader."
                 </blockquote>
-                <cite className="text-purple-400 font-semibold">— Sujith, BookHive Founder</cite>
+                <cite className="text-[#ff7d29] font-semibold">— Sujith, BookHive Founder</cite>
               </div>
             </div> 
 
             {/* Visual Timeline */}
             <div className="relative"> 
-              <div className={`bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-3xl p-8 backdrop-blur-xl border ${themeClasses.cardBorder}`}> 
+              <div className={`bg-gradient-to-br from-[#ff7d29]/20 to-[#ffbf78]/20 rounded-3xl p-8 backdrop-blur-xl border ${themeClasses.cardBorder}`}> 
                 <h4 className="text-2xl font-bold mb-8 text-center">Our Journey</h4>
                 <div className="space-y-8">
                   {[ 
-                    { title: 'Founded', value: '2023', icon: Star, color: 'text-yellow-400' }, 
-                    { title: 'Genres', value: '500+', icon: BookOpen, color: 'text-green-400' }, 
-                    { title: 'Communities', value: '100+', icon: Users, color: 'text-purple-400' } 
+                    { title: 'Founded', value: '2023', icon: Star, color: 'text-[#ffbf78]' }, 
+                    { title: 'Genres', value: '500+', icon: BookOpen, color: 'text-[#ff7d29]' }, 
+                    { title: 'Communities', value: '100+', icon: Users, color: 'text-[#7b4019]' } 
                   ].map((stat, index) => ( 
                     <div key={index} className="flex items-center space-x-4 group hover:scale-105 transition-transform duration-300"> 
-                      <div className={`w-12 h-12 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 flex items-center justify-center border ${themeClasses.cardBorder}`}>
+                      <div className={`w-12 h-12 rounded-full bg-gradient-to-r from-[#ff7d29]/20 to-[#ffbf78]/20 flex items-center justify-center border ${themeClasses.cardBorder}`}>
                         <stat.icon className={`h-6 w-6 ${stat.color}`} />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <span className={`text-sm ${themeClasses.textMuted}`}>{stat.title}</span>
-                          <span className="text-2xl font-bold text-purple-400">{stat.value}</span>
+                          <span className="text-2xl font-bold text-[#ff7d29]">{stat.value}</span>
                         </div>
                         <div className={`h-2 bg-gray-200/20 rounded-full mt-2 overflow-hidden`}>
                           <div 
-                            className="h-full bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-progress"
+                            className="h-full bg-gradient-to-r from-[#ff7d29] to-[#ffbf78] rounded-full animate-progress"
                             style={{animationDelay: `${index * 500}ms`}}
                           ></div>
                         </div>
@@ -720,8 +740,8 @@ const BookExchangeLanding = () => {
         }
 
         @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 0 5px rgba(34, 197, 94, 0.3); }
-          50% { box-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 30px rgba(34, 197, 94, 0.4); }
+          0%, 100% { box-shadow: 0 0 5px rgba(255, 125, 41, 0.3); }
+          50% { box-shadow: 0 0 20px rgba(255, 125, 41, 0.6), 0 0 30px rgba(255, 125, 41, 0.4); }
         }
 
         @keyframes progress {
@@ -769,25 +789,25 @@ const BookExchangeLanding = () => {
                 title: 'Smart Matching',
                 description: 'AI-powered algorithm matches you with readers who have books you want and want books you have.',
                 icon: '🤖',
-                gradient: 'from-purple-500 to-pink-500'
+                gradient: 'from-amber-800 to-orange-500'
               },
               {
                 title: 'Local Communities',
                 description: 'Connect with book lovers in your area for easy exchanges and book club discussions.',
                 icon: '🏘️',
-                gradient: 'from-blue-500 to-cyan-500'
+                gradient: 'from-orange-500 to-amber-400'
               },
               {
                 title: 'Rating System',
                 description: 'Rate books and traders to help build a trustworthy community ecosystem.',
                 icon: '⭐',
-                gradient: 'from-yellow-500 to-orange-500'
+                gradient: 'from-amber-400 to-yellow-200'
               },
               {
                 title: 'Secure Exchanges',
                 description: 'Built-in escrow system ensures safe and fair book exchanges every time.',
                 icon: '🔒',
-                gradient: 'from-red-500 to-pink-500'
+                gradient: 'from-amber-800 to-orange-600'
               }
             ].map((feature, index) => (
               <AnimatedCard key={index} delay={index * 100}>
@@ -797,7 +817,7 @@ const BookExchangeLanding = () => {
                   </div>
                   <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
                   <p className={themeClasses.textSecondary}>{feature.description}</p>
-                  <div className="mt-6 w-full h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-30"></div>
+                  <div className="mt-6 w-full h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-30"></div>
                 </div>
               </AnimatedCard>
             ))}
@@ -808,7 +828,7 @@ const BookExchangeLanding = () => {
             <p className={`text-xl ${themeClasses.textSecondary} mb-8 max-w-2xl mx-auto`}>
               Join thousands of book lovers already enjoying seamless book exchanges.
             </p>
-            <button className="group bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105 text-white">
+            <button className="group bg-gradient-to-r from-amber-800 to-orange-500 px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-105 text-white">
               Get Started Now
               <ArrowRight className="inline ml-2 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -861,7 +881,7 @@ const BookExchangeLanding = () => {
                   <p className={`${themeClasses.textSecondary} mb-4`}>"{testimonial.quote}"</p>
                   <div className="flex">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                      <Star key={i} className="h-5 w-5 text-amber-400 fill-current" />
                     ))}
                   </div>
                 </div>
@@ -872,7 +892,7 @@ const BookExchangeLanding = () => {
       </section>
 
       {/* Book Store Section */}
-       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
+       <div className="min-h-screen bg-gradient-to-br from-amber-900 via-orange-800 to-amber-900 text-white">
       {/* Floating background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <FloatingElement delay={0} duration={8} />
@@ -886,18 +906,18 @@ const BookExchangeLanding = () => {
           {/* Enhanced header with animated elements */}
           <div className="text-center mb-20 relative">
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
-              <div className="w-32 h-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent animate-pulse" />
+              <div className="w-32 h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent animate-pulse" />
             </div>
             
             <h2 className="text-5xl md:text-7xl font-bold mb-8 relative">
               Featured{' '}
               <GradientText className="relative">
                 Books
-                <div className="absolute -inset-2 bg-gradient-to-r from-purple-400/20 to-pink-400/20 blur-xl -z-10 animate-pulse" />
+                <div className="absolute -inset-2 bg-gradient-to-r from-orange-400/20 to-amber-400/20 blur-xl -z-10 animate-pulse" />
               </GradientText>
             </h2>
             
-            <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed mb-12">
+            <p className="text-xl text-amber-200 max-w-4xl mx-auto leading-relaxed mb-12">
               Discover trending books available for exchange in our vibrant community. 
               Join thousands of readers sharing their favorite stories.
             </p>
@@ -910,8 +930,8 @@ const BookExchangeLanding = () => {
                   onClick={() => setSelectedCategory(category)}
                   className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
                     selectedCategory === category
-                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/25 scale-105'
-                      : 'bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white'
+                      ? 'bg-gradient-to-r from-amber-800 to-orange-500 text-white shadow-lg shadow-orange-500/25 scale-105'
+                      : 'bg-white/10 text-amber-200 hover:bg-white/20 hover:text-white'
                   }`}
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
@@ -930,7 +950,7 @@ const BookExchangeLanding = () => {
 
           {/* Call to action */}
           <div className="text-center mt-16">
-            <button className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-8 py-4 rounded-2xl font-semibold text-lg hover:shadow-xl hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105 group">
+            <button className="bg-gradient-to-r from-amber-700 via-orange-500 to-amber-400 px-8 py-4 rounded-2xl font-semibold text-lg hover:shadow-xl hover:shadow-orange-500/25 transition-all duration-300 hover:scale-105 group">
               Explore All Books
               <ArrowRight className="inline-block ml-2 group-hover:translate-x-1 transition-transform duration-300" size={20} />
             </button>
@@ -953,15 +973,14 @@ const BookExchangeLanding = () => {
         }
       `}</style>
     </div>
-
-      {/* Roadmap */}
-     <div className={`min-h-screen ${isDarkMode ? 'bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900' : 'bg-gradient-to-br from-gray-50 via-purple-50/20 to-gray-50'} text-white`}>
+     {/* Roadmap */}
+     <div className={`min-h-screen ${isDarkMode ? 'bg-gradient-to-br from-amber-900 via-orange-900/20 to-amber-900' : 'bg-gradient-to-br from-amber-50 via-orange-50/20 to-amber-50'} text-white`}>
       <section id="roadmap" className="py-20 px-4 relative overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute inset-0 opacity-10">
-          <div className={`absolute top-20 left-10 w-72 h-72 ${isDarkMode ? 'bg-purple-500' : 'bg-purple-300'} rounded-full mix-blend-multiply filter blur-xl animate-pulse`}></div>
-          <div className={`absolute top-40 right-10 w-72 h-72 ${isDarkMode ? 'bg-pink-500' : 'bg-pink-300'} rounded-full mix-blend-multiply filter blur-xl animate-pulse`} style={{animationDelay: '2s'}}></div>
-          <div className={`absolute bottom-20 left-1/2 w-72 h-72 ${isDarkMode ? 'bg-blue-500' : 'bg-blue-300'} rounded-full mix-blend-multiply filter blur-xl animate-pulse`} style={{animationDelay: '4s'}}></div>
+          <div className={`absolute top-20 left-10 w-72 h-72 ${isDarkMode ? 'bg-orange-500' : 'bg-orange-300'} rounded-full mix-blend-multiply filter blur-xl animate-pulse`}></div>
+          <div className={`absolute top-40 right-10 w-72 h-72 ${isDarkMode ? 'bg-amber-500' : 'bg-amber-300'} rounded-full mix-blend-multiply filter blur-xl animate-pulse`} style={{animationDelay: '2s'}}></div>
+          <div className={`absolute bottom-20 left-1/2 w-72 h-72 ${isDarkMode ? 'bg-yellow-500' : 'bg-yellow-300'} rounded-full mix-blend-multiply filter blur-xl animate-pulse`} style={{animationDelay: '4s'}}></div>
         </div>
 
         <div className="max-w-7xl mx-auto relative">
@@ -975,7 +994,7 @@ const BookExchangeLanding = () => {
           </div>
 
           {/* Timeline line */}
-          <div className="absolute left-1/2 md:left-40 transform -translate-x-1/2 md:translate-x-0 h-full w-px bg-gradient-to-b from-purple-500 via-pink-500 to-transparent opacity-60"></div>
+          <div className="absolute left-1/2 md:left-40 transform -translate-x-1/2 md:translate-x-0 h-full w-px bg-gradient-to-b from-orange-500 via-amber-500 to-transparent opacity-60"></div>
 
           <div className="space-y-12 relative">
             {roadmapData.map((item, index) => (
@@ -991,7 +1010,7 @@ const BookExchangeLanding = () => {
                 <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-8">
                   {/* Phase indicator */}
                   <div className="flex-shrink-0 w-32 text-center md:text-right order-2 md:order-1">
-                    <div className="text-purple-400 font-bold text-lg animate-pulse">
+                    <div className="text-orange-400 font-bold text-lg animate-pulse">
                       {item.phase}
                     </div>
                   </div>
@@ -999,15 +1018,15 @@ const BookExchangeLanding = () => {
                   {/* Timeline dot */}
                   <div className="flex-shrink-0 relative order-1 md:order-2">
                     <div 
-                      className={`w-6 h-6 rounded-full border-4 border-purple-500 transition-all duration-500 ${
+                      className={`w-6 h-6 rounded-full border-4 border-orange-500 transition-all duration-500 ${
                         visibleItems.includes(index) 
-                          ? 'bg-purple-500 shadow-lg shadow-purple-500/50 scale-110' 
+                          ? 'bg-orange-500 shadow-lg shadow-orange-500/50 scale-110' 
                           : 'bg-transparent'
                       }`}
                     >
                       {/* Pulse animation */}
                       {visibleItems.includes(index) && (
-                        <div className="absolute inset-0 rounded-full bg-purple-500 animate-ping opacity-40"></div>
+                        <div className="absolute inset-0 rounded-full bg-orange-500 animate-ping opacity-40"></div>
                       )}
                     </div>
                   </div>
@@ -1016,8 +1035,8 @@ const BookExchangeLanding = () => {
                   <div 
                     className={`flex-1 ${themeClasses.cardBg} rounded-2xl p-6 border ${themeClasses.cardBorder} 
                       transition-all duration-300 hover:transform hover:scale-105 hover:shadow-2xl 
-                      hover:shadow-purple-500/20 hover:border-purple-500/50 cursor-pointer order-3
-                      ${hoveredItem === index ? 'ring-2 ring-purple-500/30' : ''}`}
+                      hover:shadow-orange-500/20 hover:border-orange-500/50 cursor-pointer order-3
+                      ${hoveredItem === index ? 'ring-2 ring-orange-500/30' : ''}`}
                     onMouseEnter={() => setHoveredItem(index)}
                     onMouseLeave={() => setHoveredItem(null)}
                   >
@@ -1048,7 +1067,7 @@ const BookExchangeLanding = () => {
                         </div>
                         <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-2`}>
                           <div 
-                            className="bg-gradient-to-r from-yellow-400 to-orange-500 h-2 rounded-full transition-all duration-1000 ease-out"
+                            className="bg-gradient-to-r from-amber-400 to-orange-500 h-2 rounded-full transition-all duration-1000 ease-out"
                             style={{
                               width: visibleItems.includes(index) ? '65%' : '0%',
                               transitionDelay: `${index * 200 + 500}ms`
@@ -1059,7 +1078,7 @@ const BookExchangeLanding = () => {
                     )}
 
                     {/* Hover effect overlay */}
-                    <div className={`absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 rounded-2xl 
+                    <div className={`absolute inset-0 bg-gradient-to-r from-orange-500/5 to-amber-500/5 rounded-2xl 
                       transition-opacity duration-300 ${hoveredItem === index ? 'opacity-100' : 'opacity-0'}`}></div>
                   </div>
                 </div>
@@ -1073,16 +1092,16 @@ const BookExchangeLanding = () => {
               ? 'translate-y-0 opacity-100' 
               : 'translate-y-20 opacity-0'
           }`}>
-            <div className={`bg-gradient-to-r ${isDarkMode ? 'from-purple-600/20 to-pink-600/20' : 'from-purple-100/50 to-pink-100/50'} backdrop-blur-sm rounded-2xl p-8 border ${isDarkMode ? 'border-purple-500/30' : 'border-purple-300/50'}`}>
+            <div className={`bg-gradient-to-r ${isDarkMode ? 'from-orange-600/20 to-amber-600/20' : 'from-orange-100/50 to-amber-100/50'} backdrop-blur-sm rounded-2xl p-8 border ${isDarkMode ? 'border-orange-500/30' : 'border-orange-300/50'}`}>
               <h3 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
                 Want to influence our roadmap?
               </h3>
               <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mb-6`}>
                 Join our community and help shape the future of BookSwap
               </p>
-              <button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 
+              <button className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 
                 px-8 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 
-                hover:shadow-lg hover:shadow-purple-500/25 text-white">
+                hover:shadow-lg hover:shadow-orange-500/25 text-white">
                 Join the Discussion
               </button>
             </div>
@@ -1108,11 +1127,10 @@ const BookExchangeLanding = () => {
         `}</style>
       </section>
     </div>
-
 {/* FAQ */}
-      <div className={`min-h-screen ${isDarkMode ? 'bg-slate-900' : 'bg-white'}`}>
+      <div className={`min-h-screen ${isDarkMode ? 'bg-amber-900' : 'bg-white'}`}>
       {/* FAQ */}
-      <section className={`py-20 px-4 ${isDarkMode ? 'bg-gray-800/30' : 'bg-white'}`}>
+      <section className={`py-20 px-4 ${isDarkMode ? 'bg-orange-800/30' : 'bg-white'}`}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-bold mb-6">
@@ -1143,8 +1161,8 @@ const BookExchangeLanding = () => {
                 }}
               >
                 <div className="flex items-start justify-between">
-                  <h3 className="text-xl font-bold text-purple-400 pr-4">{faq.q}</h3>
-                  <ChevronDown className="h-5 w-5 text-purple-400" />
+                  <h3 className="text-xl font-bold text-orange-400 pr-4">{faq.q}</h3>
+                  <ChevronDown className="h-5 w-5 text-orange-400" />
                 </div>
                 <div className={`mt-3 ${themeClasses.textSecondary}`}>
                   {faq.a}
@@ -1168,7 +1186,7 @@ const BookExchangeLanding = () => {
             </p>
             <a 
               href="#contact"
-              className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-3 rounded-full font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 text-white"
+              className="inline-block bg-gradient-to-r from-orange-500 to-amber-500 px-6 py-3 rounded-full font-semibold hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-300 text-white"
             >
               Contact Us
             </a>
@@ -1193,8 +1211,7 @@ const BookExchangeLanding = () => {
         }
       `}</style>
     </div>
-
-      {/* Contact */}
+     {/* Contact */}
 <section id="contact" className={`py-24 px-4 ${themeClasses.sectionBg}`}>
   <div className="max-w-7xl mx-auto">
     <div className="text-center mb-20">
@@ -1214,31 +1231,31 @@ const BookExchangeLanding = () => {
           
           <div className="space-y-6">
             <div className="flex items-start space-x-4">
-              <div className={`p-3 rounded-lg bg-purple-500/10 text-purple-500`}>
+              <div className={`p-3 rounded-lg bg-orange-500/10 text-orange-500`}>
                 <Mail className="h-6 w-6" />
               </div>
               <div>
                 <div className="font-semibold text-lg">Email</div>
-                <a href="mailto:hello@bookswap.com" className={`${themeClasses.textSecondary} hover:text-purple-400 transition-colors`}>
+                <a href="mailto:hello@bookswap.com" className={`${themeClasses.textSecondary} hover:text-orange-400 transition-colors`}>
                   hello@bookswap.com
                 </a>
               </div>
             </div>
 
             <div className="flex items-start space-x-4">
-              <div className={`p-3 rounded-lg bg-blue-500/10 text-blue-500`}>
+              <div className={`p-3 rounded-lg bg-amber-500/10 text-amber-600`}>
                 <Phone className="h-6 w-6" />
               </div>
               <div>
                 <div className="font-semibold text-lg">Phone</div>
-                <a href="tel:+15551234567" className={`${themeClasses.textSecondary} hover:text-purple-400 transition-colors`}>
+                <a href="tel:+15551234567" className={`${themeClasses.textSecondary} hover:text-orange-400 transition-colors`}>
                   +1 (555) 123-4567
                 </a>
               </div>
             </div>
 
             <div className="flex items-start space-x-4">
-              <div className={`p-3 rounded-lg bg-pink-500/10 text-pink-500`}>
+              <div className={`p-3 rounded-lg bg-yellow-500/10 text-yellow-600`}>
                 <MapPin className="h-6 w-6" />
               </div>
               <div>
@@ -1251,7 +1268,7 @@ const BookExchangeLanding = () => {
             </div>
           </div>
 
-          <div className="mt-10 pt-6 border-t border-gray-700/30">
+          <div className="mt-10 pt-6 border-t border-amber-700/30">
             <h4 className="font-semibold mb-4">Business Hours</h4>
             <div className={`space-y-2 ${themeClasses.textSecondary}`}>
               <div className="flex justify-between">
@@ -1286,7 +1303,7 @@ const BookExchangeLanding = () => {
                   id="name"
                   type="text"
                   placeholder="John Doe"
-                  className={`w-full ${themeClasses.inputBg} border ${themeClasses.inputBorder} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all`}
+                  className={`w-full ${themeClasses.inputBg} border ${themeClasses.inputBorder} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all`}
                   required
                 />
               </div>
@@ -1298,7 +1315,7 @@ const BookExchangeLanding = () => {
                   id="email"
                   type="email"
                   placeholder="john@example.com"
-                  className={`w-full ${themeClasses.inputBg} border ${themeClasses.inputBorder} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all`}
+                  className={`w-full ${themeClasses.inputBg} border ${themeClasses.inputBorder} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all`}
                   required
                 />
               </div>
@@ -1312,7 +1329,7 @@ const BookExchangeLanding = () => {
                 id="subject"
                 type="text"
                 placeholder="How can we help?"
-                className={`w-full ${themeClasses.inputBg} border ${themeClasses.inputBorder} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all`}
+                className={`w-full ${themeClasses.inputBg} border ${themeClasses.inputBorder} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all`}
                 required
               />
             </div>
@@ -1325,7 +1342,7 @@ const BookExchangeLanding = () => {
                 id="message"
                 rows={5}
                 placeholder="Tell us about your inquiry..."
-                className={`w-full ${themeClasses.inputBg} border ${themeClasses.inputBorder} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none`}
+                className={`w-full ${themeClasses.inputBg} border ${themeClasses.inputBorder} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all resize-none`}
                 required
               ></textarea>
             </div>
@@ -1334,7 +1351,7 @@ const BookExchangeLanding = () => {
               <input
                 id="consent"
                 type="checkbox"
-                className={`rounded ${themeClasses.inputBorder} text-purple-500 focus:ring-purple-500 mr-3`}
+                className={`rounded ${themeClasses.inputBorder} text-orange-500 focus:ring-orange-500 mr-3`}
                 required
               />
               <label htmlFor="consent" className={`text-sm ${themeClasses.textSecondary}`}>
@@ -1344,13 +1361,13 @@ const BookExchangeLanding = () => {
 
             <button
               type="submit"
-              className="group relative w-full bg-gradient-to-r from-purple-600 to-pink-600 py-4 px-6 rounded-xl font-bold text-lg hover:shadow-xl hover:shadow-purple-500/25 transition-all duration-300 overflow-hidden"
+              className="group relative w-full bg-gradient-to-r from-orange-600 to-amber-600 py-4 px-6 rounded-xl font-bold text-lg hover:shadow-xl hover:shadow-orange-500/25 transition-all duration-300 overflow-hidden"
             >
               <span className="relative z-10 flex items-center justify-center">
                 Send Message
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </span>
-              <span className="absolute inset-0 bg-gradient-to-r from-purple-700 to-pink-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+              <span className="absolute inset-0 bg-gradient-to-r from-orange-700 to-amber-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
             </button>
           </form>
         </div>
@@ -1358,7 +1375,6 @@ const BookExchangeLanding = () => {
     </div>
   </div>
 </section>
-
 {/*/footer */}
 <footer className={`py-16 px-4 ${themeClasses.footerBg} border-t ${themeClasses.footerBorder} transition-colors duration-300`}>
   <div className="max-w-7xl mx-auto">
@@ -1366,8 +1382,8 @@ const BookExchangeLanding = () => {
       {/* Brand Column */}
       <div className="md:col-span-2">
         <div className="flex items-center space-x-3 mb-6">
-          <BookOpen className="h-10 w-10 text-purple-500" />
-          <span className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+          <BookOpen className="h-10 w-10 text-orange-500" />
+          <span className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-amber-500 bg-clip-text text-transparent">
             BookSwap
           </span>
         </div>
@@ -1379,7 +1395,7 @@ const BookExchangeLanding = () => {
             <a 
               key={social} 
               href="#" 
-              className={`p-2 rounded-full ${themeClasses.cardBg} ${themeClasses.cardBorder} border hover:border-purple-500 hover:text-purple-500 transition-all duration-300`}
+              className={`p-2 rounded-full ${themeClasses.cardBg} ${themeClasses.cardBorder} border hover:border-orange-500 hover:text-orange-500 transition-all duration-300`}
               aria-label={`${social} link`}
             >
               {/* Replace with actual social icons or use react-icons */}
@@ -1392,7 +1408,7 @@ const BookExchangeLanding = () => {
       {/* Platform Links */}
       <div>
         <h4 className={`text-xl font-bold mb-5 ${themeClasses.text} flex items-center`}>
-          <ChevronDown className="mr-2 h-5 w-5 text-purple-400 md:hidden" />
+          <ChevronDown className="mr-2 h-5 w-5 text-orange-400 md:hidden" />
           Platform
         </h4>
         <div className={`space-y-3 ${themeClasses.textSecondary}`}>
@@ -1400,7 +1416,7 @@ const BookExchangeLanding = () => {
             <a 
               key={item} 
               href="#" 
-              className="block hover:text-purple-400 transition-colors duration-200"
+              className="block hover:text-orange-400 transition-colors duration-200"
             >
               {item}
             </a>
@@ -1411,7 +1427,7 @@ const BookExchangeLanding = () => {
       {/* Community Links */}
       <div>
         <h4 className={`text-xl font-bold mb-5 ${themeClasses.text} flex items-center`}>
-          <ChevronDown className="mr-2 h-5 w-5 text-purple-400 md:hidden" />
+          <ChevronDown className="mr-2 h-5 w-5 text-orange-400 md:hidden" />
           Community
         </h4>
         <div className={`space-y-3 ${themeClasses.textSecondary}`}>
@@ -1419,7 +1435,7 @@ const BookExchangeLanding = () => {
             <a 
               key={item} 
               href="#" 
-              className="block hover:text-purple-400 transition-colors duration-200"
+              className="block hover:text-orange-400 transition-colors duration-200"
             >
               {item}
             </a>
@@ -1430,7 +1446,7 @@ const BookExchangeLanding = () => {
       {/* Support Links */}
       <div>
         <h4 className={`text-xl font-bold mb-5 ${themeClasses.text} flex items-center`}>
-          <ChevronDown className="mr-2 h-5 w-5 text-purple-400 md:hidden" />
+          <ChevronDown className="mr-2 h-5 w-5 text-orange-400 md:hidden" />
           Support
         </h4>
         <div className={`space-y-3 ${themeClasses.textSecondary}`}>
@@ -1438,7 +1454,7 @@ const BookExchangeLanding = () => {
             <a 
               key={item} 
               href="#" 
-              className="block hover:text-purple-400 transition-colors duration-200"
+              className="block hover:text-orange-400 transition-colors duration-200"
             >
               {item}
             </a>
@@ -1461,9 +1477,9 @@ const BookExchangeLanding = () => {
             <input 
               type="email" 
               placeholder="Your email address" 
-              className={`flex-grow ${themeClasses.inputBg} border ${themeClasses.inputBorder} rounded-l-xl px-4 py-3 focus:outline-none focus:border-purple-500 transition-colors`}
+              className={`flex-grow ${themeClasses.inputBg} border ${themeClasses.inputBorder} rounded-l-xl px-4 py-3 focus:outline-none focus:border-orange-500 transition-colors`}
             />
-            <button className="bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-3 rounded-r-xl font-semibold hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 text-white">
+            <button className="bg-gradient-to-r from-orange-500 to-amber-500 px-6 py-3 rounded-r-xl font-semibold hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-300 text-white">
               Subscribe
             </button>
           </div>
@@ -1474,7 +1490,7 @@ const BookExchangeLanding = () => {
     {/* Copyright */}
     <div className={`border-t ${themeClasses.footerBorder} pt-8 flex flex-col md:flex-row justify-between items-center`}>
       <p className={`${themeClasses.textSecondary} mb-4 md:mb-0`}>
-        &copy; 2025 BookSwap. All rights reserved. Made with <span className="text-pink-500">❤️</span> for book lovers everywhere.
+        &copy; 2025 BookSwap. All rights reserved. Made with <span className="text-orange-500">❤️</span> for book lovers everywhere.
       </p>
       <div className="flex space-x-6">
         <a href="#" className={themeClasses.textSecondary}>Privacy Policy</a>
