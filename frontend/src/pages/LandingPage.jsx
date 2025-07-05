@@ -537,7 +537,7 @@ const BookExchangeLanding = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+          <div className="flex flex-row items-center justify-center  gap-8 m-6  mt-16">
             {[
               { number: '50K+', label: 'Active Traders', icon: Users },
               { number: '200K+', label: 'Books Exchanged', icon: BookOpen },
@@ -701,7 +701,7 @@ const BookExchangeLanding = () => {
                         <stat.icon className={`h-6 w-6 ${stat.color}`} />
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-center">
                           <span className={`text-sm ${themeClasses.textMuted}`}>{stat.title}</span>
                           <span className="text-2xl font-bold text-[#ff7d29]">{stat.value}</span>
                         </div>
