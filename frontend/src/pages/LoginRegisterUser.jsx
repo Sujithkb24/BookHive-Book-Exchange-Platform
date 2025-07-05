@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Add this at the top
-
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
 import {
   Eye,
   EyeOff,
@@ -209,6 +210,44 @@ const AuthForm = () => {
     });
   };
 
+   const parentRef = useRef(null);
+  const childRefs = useRef([]);
+
+  useEffect(() => {
+    const parent = parentRef.current;
+
+    // Animate parent first
+    gsap.fromTo(
+      parent,
+      { y: -100, opacity: 0 },
+      {
+        y: 0,
+        
+        opacity: 1,
+        duration: 3,
+        ease: "power3.out",
+        onComplete: () => {
+          // Animate all child elements with stagger AFTER parent animation finishes
+          gsap.fromTo(
+            childRefs.current,
+            { y: -50, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration:1,
+              stagger: 0.2,
+              ease: "power3.out",
+            }
+          );
+        },
+      }
+    );
+  }, []);
+
+  // Clear refs on each render to avoid duplicates
+  childRefs.current = [];
+
+
   return (
     <div>
       <div
@@ -221,7 +260,7 @@ const AuthForm = () => {
             <div className="w-full max-w-md">
               {/* Header */}
               <div className="text-center -mt-16 ml-7">
-                <h1 className="text-4xl  -mt-12 text-black font-bold  bg-gradient-to-r from-white to-gray-300 bg-clip-text ">
+                <h1 className="text-4xl mt-9  text-black font-bold  bg-gradient-to-r from-white to-gray-300 bg-clip-text ">
                   {isLogin ? "Welcome Back" : "Join Us Today"}
                 </h1>
                 <p className="text-black text-lg">
@@ -250,7 +289,7 @@ const AuthForm = () => {
               )}
 
               {/* Forms */}
-              <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 ml-9 mt-7 border border-black/10 shadow-2xl">
+              <div ref={parentRef} className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 ml-9 mt-7 border border-black/10 shadow-2xl">
                 {isLogin ? (
                   /* Login Form */
                   <div className="space-y-4">
@@ -258,7 +297,7 @@ const AuthForm = () => {
                       <label className="block text-sm font-semibold text-black mb-3">
                         Email Address
                       </label>
-                      <div className="relative">
+                      <div ref={(el) => (childRefs.current[0] = el)} className="relative">
                         <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black w-5 h-5" />
                         <input
                           type="email"
@@ -277,7 +316,7 @@ const AuthForm = () => {
                       <label className="block text-sm font-semibold text-black mb-3">
                         Password
                       </label>
-                      <div className="relative">
+                      <div ref={(el) => (childRefs.current[1] = el)} className="relative">
                         <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black w-5 h-5" />
                         <input
                           type={showPassword ? "text" : "password"}

@@ -207,7 +207,7 @@ const ProfilePage = () => {
                 />
 
                 <div>
-                  <label className="block text-lg font-medium text-gray-700 mb-2 flex items-center">
+                  <label className="text-lg font-medium text-gray-700 mb-2 flex items-center">
                      Gender
                   </label>
                   <div className="relative">
@@ -275,7 +275,7 @@ const ProfilePage = () => {
 // Re-usable Field component for consistency
 const Field = ({ label, value, name, onChange, disabled, editable, type = 'text', placeholder = '', icon }) => (
   <div>
-    <label className="block text-lg font-medium text-gray-700 mb-2 flex items-center">
+    <label className="text-lg font-medium text-gray-700 mb-2 flex items-center">
       {icon && <span className="mr-2 text-gray-500">{icon}</span>} {label}
     </label>
     <input

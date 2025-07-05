@@ -1,12 +1,13 @@
-import React from "react";
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import BookExchangeLanding from "./pages/LandingPage";
 import NotFound from "./pages/NotFound";
 import AuthForm from "./pages/LoginRegisterUser";
 // import ProductPage from "./components/ViewProduct";
 import BooksDashboard from "./pages/Dashboard";
+
 import BookstoreEarningsDashboard from "./pages/YourEarnings";
-// import OrderComponent from "./pages/Orders";
+// 
 import BookshopDashboard from "./pages/Dashboard";
 import BookDetailsPage from "./pages/BookDetail";
 import CartPage from "./pages/CartPage";
@@ -22,8 +23,10 @@ function App() {
       <Routes>
         <Route path="/" element={<BookExchangeLanding />} /> 
         <Route path="/YourEarnings" element={<BookstoreEarningsDashboard />} /> 
-        {/* <Route path="/Orders" element={<OrderComponent/>} />  */}
+        {/*  */}
         <Route path="/login" element={<AuthForm/>} /> 
+   
+        <Route path="/dashboard" element={<BookshopDashboard/>} /> 
         {/* <Route path="/ViewProduct" element={<ProductPage/>} />  */}
         <Route path="/dashboard" element={<BooksDashboard/>} /> 
         <Route path="/book/:bookId" element={<BookDetailsPage />} />
@@ -37,6 +40,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
+   
   );
 }
 
