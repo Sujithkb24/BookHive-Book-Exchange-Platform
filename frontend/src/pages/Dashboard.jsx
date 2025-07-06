@@ -3,6 +3,7 @@ import { Search, Filter, ChevronDown, SortAsc, SortDesc, X, BookOpen, Eye, Plus 
 import Navbar from '../components/navbar';
 import { useNavigate } from 'react-router-dom';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import './../App.css'
     import { gsap } from 'gsap';
 const BooksDashboard = () => {
   // Your existing state
@@ -269,7 +270,7 @@ const BooksDashboard = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+      <div className="min-h-screen font bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       
     <div className="min-h-[600px] bg-gradient-to-br from-amber-50 to-orange-100 flex items-center  px-8">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
@@ -290,7 +291,7 @@ const BooksDashboard = () => {
         <div className="space-y-6">
           <h1 
             ref={titleRef}
-            className="text-5xl lg:text-6xl font-bold text-amber-900 transition-all duration-1000 ease-out"
+            className="font2 text-5xl lg:text-6xl font-bold text-amber-900 transition-all duration-1000 ease-out"
           >
             Your next story 
             <span className="block text-orange-700">starts here</span>
@@ -298,7 +299,7 @@ const BooksDashboard = () => {
           
           <h2 
             ref={subtitleRef}
-            className="text-2xl text-amber-700 font-medium transition-all duration-1000 ease-out"
+            className="font3 text-2xl text-amber-700 font-medium transition-all duration-1000 ease-out"
           >
            A smarter way to Share Books
           </h2>
@@ -316,7 +317,7 @@ const BooksDashboard = () => {
           >
             <button 
             onClick={handleClick}
-            className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+            className="font3 text-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white tracking-wide px-8 py-2 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
               Add your Book
             </button>
           </div>
@@ -479,15 +480,15 @@ const BooksDashboard = () => {
                   {/* Card Content */}
                   <div className="p-5">
                     <div className="mb-3">
-                      <h3 className="text-xl  text-orange-500 font-bold line-clamp-2 group-hover:text-amber-700 transition-colors mb-1">
+                      <h3 className="font2 text-xl  text-orange-500 font-bold line-clamp-2 group-hover:text-amber-700 transition-colors mb-1">
                         {book.bookName}
                       </h3>
                       <p className="text-sm text-amber-900 font-semibold">by {book.authorName}</p>
                     </div>
 
-                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
-                      <span className="bg-gray-100 px-2 py-1 rounded-full">{book.pageCount} pages</span>
-                      <span className="bg-gray-100 px-2 py-1 rounded-full">ISBN: {book.isbn}</span>
+                    <div className="flex items-center justify-between text-xs text-gray-800 mb-4">
+                      <span className="bg-gray-300 px-2 py-1 rounded-full">{book.pageCount} pages</span>
+                      <span className="bg-gray-300 px-2 py-1 rounded-full">ISBN: {book.isbn}</span>
                     </div>
 
                     {book.description && (
@@ -521,8 +522,8 @@ const BooksDashboard = () => {
           )}
         </div>
       </div>
-      <footer className=" border-t border-gray-200 bg-[url('/footer.jpg')] bg-cover bg-center min-h-screen
-             relative   font-poppins">
+      <footer className=" font border-t border-gray-200 bg-[url('/footer.jpg')] bg-cover bg-center min-h-screen
+             relative   ">
         <div className="max-w-7xl mx-auto px-6 py-16 ">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
             <div className="lg:col-span-2">
@@ -654,7 +655,7 @@ const BooksDashboard = () => {
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-amber-400 to-amber-800 py-12 overflow-hidden">
+        <div className="font2 font-bold bg-gradient-to-r from-amber-400 to-amber-800 py-12 overflow-hidden">
           <div className="relative">
             <div className="animate-marquee whitespace-nowrap">
               <span className="text-6xl md:text-8xl lg:text-9xl font-black text-white tracking-tighter mx-8">

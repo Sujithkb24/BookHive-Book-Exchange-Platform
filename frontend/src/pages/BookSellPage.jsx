@@ -2,7 +2,7 @@ import React, { useEffect, useRef,useState } from 'react';
 import { BookOpen, Search, Wand2, Save, AlertCircle, CheckCircle, Hash, User, FileText, Package, DollarSign, Upload, X, Image } from 'lucide-react';
 import Navbar from '../components/navbar';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-
+import './../App.css'
 const BookSellPage = () => {
   const [inputMode, setInputMode] = useState('auto'); // 'auto' or 'manual'
   const [loading, setLoading] = useState({
@@ -448,16 +448,16 @@ const BookSellPage = () => {
               <div className="space-y-6">
                 <h2 
                   ref={textRef}
-                  className="text-4xl md:text-5xl lg:text-6xl font-bold text-amber-900 leading-tight"
+                  className="font2 text-9xl md:text-5xl lg:text-6xl font-bold text-amber-900 leading-tight"
                 >
                   Sell Your Book
                 </h2>
                 
-                <div ref={subtextRef} className="space-y-4 text-amber-900">
-                  <p className="text-xl md:text-2xl font-semibold">
+                <div ref={subtextRef} className=" space-y-4 text-amber-900">
+                  <p className=" font3 tracking-wider text-xl md:text-2xl font-semibold">
                     Transform Your Story Into Success
                   </p>
-                  <p className="text-lg leading-relaxed">
+                  <p className="font font-semibold text-amber-700 text-lg leading-relaxed">
                     Join thousands of authors who've turned their passion into profit. 
                     Our platform helps you reach readers worldwide, maximize your royalties, 
                     and build a sustainable writing career.
@@ -494,7 +494,7 @@ const BookSellPage = () => {
       </div>
     </div>
           {/* Mode Selection */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border max-w-7xl border-gray-100">
+          <div className="font bg-white rounded-2xl shadow-lg p-6 mb-8 border max-w-7xl border-gray-100">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">How would you like to add your book?</h2>
             <div className="flex flex-col sm:flex-row gap-4">
               <button
@@ -784,7 +784,7 @@ const BookSellPage = () => {
               </div>
 
               {/* Submit Button */}
-              <div className="mt-8 text-center">
+              <div className="font2  font-light mt-8 text-center">
                 <button
                   onClick={handleSubmit}
                   disabled={loading.submit || loading.imageUpload}
@@ -808,7 +808,7 @@ const BookSellPage = () => {
 
           {/* Info Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+            <div className="bg-orange-200 rounded-xl p-6 border border-gray-100 shadow-sm">
               <h3 className="font-semibold text-gray-900 mb-2 flex items-center">
                 <BookOpen className="w-5 h-5 mr-2 text-indigo-600" />
                 Auto-Generate Tips
@@ -819,7 +819,7 @@ const BookSellPage = () => {
               </p>
             </div>
             
-            <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+            <div className="bg-orange-200 rounded-xl p-6 border border-gray-100 shadow-sm">
               <h3 className="font-semibold text-gray-900 mb-2 flex items-center">
                 <img
                   src="/fire.png"
