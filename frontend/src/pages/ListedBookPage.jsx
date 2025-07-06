@@ -216,36 +216,34 @@ const MyListedBooksPage = () => {
   return (
     <>
       <Navbar />
-      <div className="font min-h-screen bg-amber-300">
+      <div className="font min-h-screen bg-amber-50">
         {/* Header */}
-        <div className="bg-amber-400 backdrop-blur-sm  border-b-4 border-amber-700">
-          <div className="max-w-7xl  px-2 sm:px-6 lg:px-2">
-            <div className="flex items-center ">
-            
-              <div className='flex items-center justify-center'>
-                 <div className="h-[300px] w-[300px]">
-               
-              <DotLottieReact
-      src="https://lottie.host/3f7a6a58-d3d4-4ec2-b0a5-98ce8bc8c6db/2jJIo0gWbv.lottie"
-      loop
-      autoplay
-    />
-              </div>
-              <div className='flex flex-col'>
-                <h1 className="font2 text-7xl font-bold text-gray-900 mb-2">My Listed Books</h1>
-                <p className="font3 text-2xl tracking-wider text-gray-900">Manage your book listings and track performance</p>
-              </div>
-              </div>
-              <button
-                onClick={() => window.location.href = '/sell-book'}
-                className="bg-gradient-to-r from-amber-600 to-amber-800 text-white ml-32 px-6 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center space-x-2"
-              >
-                <Plus className="h-5 w-5" />
-                <span>Add New Book</span>
-              </button>
-            </div>
-          </div>
-        </div>
+       <div className="bg-amber-400 backdrop-blur-sm border-b-4 border-amber-700">
+ <div className="max-w-7xl px-2 sm:px-6 lg:px-2">
+   <div className="flex flex-col lg:flex-row items-center lg:justify-between gap-4 py-4">
+     <div className='flex flex-col sm:flex-row items-center justify-center gap-4'>
+       <div className="h-[150px] w-[150px] sm:h-[200px] sm:w-[200px] lg:h-[300px] lg:w-[300px]">
+         <DotLottieReact
+           src="https://lottie.host/3f7a6a58-d3d4-4ec2-b0a5-98ce8bc8c6db/2jJIo0gWbv.lottie"
+           loop
+           autoplay
+         />
+       </div>
+       <div className='flex flex-col text-center sm:text-left'>
+         <h1 className="font2 text-3xl sm:text-5xl lg:text-7xl font-bold text-gray-900 mb-2">My Listed Books</h1>
+         <p className="font3 text-lg sm:text-xl lg:text-2xl tracking-wider text-gray-900">Manage your book listings and track performance</p>
+       </div>
+     </div>
+     <button
+       onClick={() => window.location.href = '/sell-book'}
+       className="bg-gradient-to-r from-amber-600 to-amber-800 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center space-x-2 whitespace-nowrap"
+     >
+       <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
+       <span className="text-sm sm:text-base">Add New Book</span>
+     </button>
+   </div>
+ </div>
+</div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Filters and Search */}
