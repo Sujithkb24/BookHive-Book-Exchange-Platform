@@ -2,7 +2,7 @@ import React, { useEffect, useRef,useState } from 'react';
 import { BookOpen, Search, Wand2, Save, AlertCircle, CheckCircle, Hash, User, FileText, Package, DollarSign, Upload, X, Image } from 'lucide-react';
 import Navbar from '../components/navbar';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import './../App.css'
+import Footer1 from '../ui/footer';
 const BookSellPage = () => {
   const [inputMode, setInputMode] = useState('auto'); // 'auto' or 'manual'
   const [loading, setLoading] = useState({
@@ -836,6 +836,7 @@ const BookSellPage = () => {
           </div>
         </div>
       </div>
+      <Footer1/>
     </>
   );
 };

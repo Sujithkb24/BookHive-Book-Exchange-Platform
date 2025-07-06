@@ -133,36 +133,45 @@ const ProfilePage = () => {
         <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
 
         {/* This is the key change: Added max-w-5xl (or any max-width you prefer) */}
-        <div className="relative z-10 container mx-auto px-4 py-12 md:py-20 **max-w-5xl**">
+        <div className="font relative z-10 container mx-auto px-4 py-12 md:py-20 **max-w-5xl**">
           {/* Hero Section */}
-          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-6 md:p-10 mb-10 text-center border border-gray-100 transform transition-all duration-300 hover:scale-[1.01]">
-            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-white text-6xl md:text-7xl font-bold overflow-hidden shadow-lg mx-auto mb-6 border-4 border-white">
+          <div className="bg-[url('/profile.jpg')] bg-cover bg-centerbackdrop-blur-lg rounded-3xl shadow-xl p-6 md:p-10 mb-10 text-center border border-gray-100 transform transition-all duration-300 hover:scale-[1.01]">
+            <div className="font2 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-amber-500 to-amber-800 flex items-center justify-center text-white text-6xl md:text-7xl font-bold overflow-hidden shadow-lg mx-auto mb-6 border-4 border-white">
               <span className="relative z-10">
                 {profile.nickname ? profile.nickname.charAt(0).toUpperCase() : (profile.username ? profile.username.charAt(0).toUpperCase() : 'U')}
               </span>
               {/*  */}
             </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold text-indigo-800 mb-2 leading-tight">
+            
+            <h1 className="font2 tracking-wide text-4xl md:text-5xl font-extrabold text-white mb-2 leading-tight">
               {profile.nickname || profile.username || 'Your Profile'}
             </h1>
-            <p className="text-lg md:text-xl text-gray-600 mb-4 flex items-center justify-center">
-              <FiMail className="mr-2 text-indigo-500" /> {profile.email}
+            <p className="text-lg md:text-xl text-white mb-4 flex items-center justify-center">
+              <FiMail className="mr-2 text-white shadow-sky-800" /> {profile.email}
             </p>
+            
             {profile.token && (
-              <p className="text-md text-gray-500 flex items-center justify-center">
-                <FiKey className="mr-2 text-gray-400" /> Token: <span className="font-mono text-sm ml-1 select-all">{profile.token}...</span>
+              <div className='bg-orange-800 mx-96 rounded-xl'>
+              <p className=" font2 text-lg tracking-wider text-white flex items-center justify-center">
+                 <img
+                  src="/fire.png"
+                  alt="BookHive"
+                  className="w-15 h-15 mr-4 "
+                />    Token: <span className=" text-2xl font-bold ml-1 select-all">{profile.token}</span>
               </p>
+              </div>
             )}
+           
           </div>
 
           {/* Profile Details Sections */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Account Information Section */}
             <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-6 md:p-8 border border-gray-100 transform transition-all duration-300 hover:translate-y-[-5px]">
-              <h2 className="text-3xl font-bold text-indigo-700 mb-6 flex items-center">
-                <FiUser className="mr-3 text-indigo-500" /> Account Information
+              <h2 className="text-3xl font-bold text-orange-600 mb-6 flex items-center">
+                <FiUser className="mr-3 text-orange-600" /> Account Information
               </h2>
-              <div className="space-y-6">
+              <div className="space-y-6 text-amber-700">
                 <Field label="Username" value={profile.username} icon={<FiUser />} disabled />
                 <Field label="Email" value={profile.email} icon={<FiMail />} disabled />
               </div>
@@ -170,8 +179,8 @@ const ProfilePage = () => {
 
             {/* Personal Details Section */}
             <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-6 md:p-8 border border-gray-100 transform transition-all duration-300 hover:translate-y-[-5px]">
-              <h2 className="text-3xl font-bold text-indigo-700 mb-6 flex items-center">
-                <FiEdit3 className="mr-3 text-indigo-500" /> Personal Details
+              <h2 className="text-3xl font-bold text-orange-600 mb-6 flex items-center">
+                <FiEdit3 className="mr-3 text-orange-600" /> Personal Details
               </h2>
               <div className="space-y-6">
                 <Field
