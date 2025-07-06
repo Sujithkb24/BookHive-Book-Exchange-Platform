@@ -185,7 +185,7 @@ const NavBar = ({ currentPath = '/dashboard', onNavigate = () => {} }) => {
           {/* Logo and Brand */}
           <div className="flex items-center">
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/')}
               className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
             >
               <div className="relative">

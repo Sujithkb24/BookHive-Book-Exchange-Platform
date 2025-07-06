@@ -332,21 +332,21 @@ const BooksDashboard = () => {
           {/* Search and Filter Bar */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-            <div className="relative flex-1 max-w-3xl">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <div className="relative flex-1 max-w-3xl ">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-800" />
               <input
                 type="text"
                 placeholder="Search books or authors..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm"
+                className="w-full pl-10 pr-4 py-3 border border-amber-900 bg-amber-100 font-bold text-amber-900 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm"
               />
             </div>
             
             {/* Filter Toggle Button */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center space-x-2 bg-indigo-600 text-white px-4 py-3 rounded-xl hover:bg-indigo-700 transition-colors shadow-sm"
+              className="flex items-center space-x-2 bg-amber-600 text-white px-4 py-3 rounded-xl hover:bg-amber-700 transition-colors shadow-sm"
             >
               <Filter className="h-4 w-4" />
               <span className="text-sm font-medium">Advanced Filters</span>
@@ -358,15 +358,15 @@ const BooksDashboard = () => {
 
           {/* Advanced Filters */}
           {showFilters && (
-            <div className="mt-6 bg-white rounded-xl shadow-lg p-6">
+            <div className="mt-6 bg-orange-300 font-semibold rounded-xl shadow-lg p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Filter By */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Filter By</label>
+                  <label className="block text-sm font-medium text-amber-900 mb-2">Filter By</label>
                   <select
                     value={filterBy}
                     onChange={(e) => setFilterBy(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-800 focus:border-transparent"
                   >
                     <option value="all">All Fields</option>
                     <option value="id">Book ID</option>
@@ -377,11 +377,11 @@ const BooksDashboard = () => {
 
                 {/* Sort By */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                  <label className="block text-sm font-medium text-amber-900 mb-2">Sort By</label>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-900 focus:border-transparent"
                   >
                     <option value="bookName">Book Name</option>
                     <option value="authorName">Author Name</option>
@@ -392,10 +392,10 @@ const BooksDashboard = () => {
 
                 {/* Sort Order */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Sort Order</label>
+                  <label className="block text-sm font-medium text-amber-900  mb-2">Sort Order</label>
                   <button
                     onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                    className="w-full flex items-center justify-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                    className="w-full flex items-center justify-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-amber-900 focus:border-transparent transition-colors"
                   >
                     {sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
                     <span className="capitalize">{sortOrder}ending</span>
@@ -406,7 +406,7 @@ const BooksDashboard = () => {
                 <div className="flex items-end">
                   <button
                     onClick={clearFilters}
-                    className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
+                    className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-amber-100 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
                   >
                     <X className="h-4 w-4" />
                     <span>Clear All</span>
@@ -416,8 +416,12 @@ const BooksDashboard = () => {
 
               {/* Price Range */}
               <div className="mt-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Price Range: {priceRange[0]} - {priceRange[1]} tokens
+                <label className="flex text-sm font-medium text-amber-900  mb-2">
+                  Price Range:   <img
+                  src="/fire.png"
+                  alt="BookHive"
+                  className="w-5 h-5 rounded-xl shadow-sm"
+                /> {priceRange[0]} - {priceRange[1]} tokens
                 </label>
                 <div className="flex items-center space-x-4">
                   <input
@@ -426,7 +430,7 @@ const BooksDashboard = () => {
                     max={maxPrice}
                     value={priceRange[0]}
                     onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
-                    className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    className="flex-1 h-2 bg-gray-200  rounded-lg appearance-none cursor-pointer"
                   />
                   <input
                     type="range"
@@ -437,7 +441,7 @@ const BooksDashboard = () => {
                     className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                 </div>
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <div className="flex justify-between text-xs text-amber-900 mt-1">
                   <span>{minPrice} tokens</span>
                   <span>{maxPrice} tokens</span>
                 </div>
@@ -467,7 +471,7 @@ const BooksDashboard = () => {
               {filteredBooks.map((book) => (
                 <div
                   key={book._id}
-                  className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-indigo-200 transform hover:-translate-y-2"
+                  className="group bg-orange-50 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-indigo-200 transform hover:-translate-y-2"
                 >
                   {/* Book Cover */}
                   <BookCoverImage book={book} />
@@ -475,10 +479,10 @@ const BooksDashboard = () => {
                   {/* Card Content */}
                   <div className="p-5">
                     <div className="mb-3">
-                      <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 group-hover:text-indigo-600 transition-colors mb-1">
+                      <h3 className="text-xl  text-orange-500 font-bold line-clamp-2 group-hover:text-amber-700 transition-colors mb-1">
                         {book.bookName}
                       </h3>
-                      <p className="text-sm text-gray-600">by {book.authorName}</p>
+                      <p className="text-sm text-amber-900 font-semibold">by {book.authorName}</p>
                     </div>
 
                     <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
@@ -492,14 +496,19 @@ const BooksDashboard = () => {
                       </p>
                     )}
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-1">
-                        <span className="text-2xl font-bold text-indigo-600">{book.token}</span>
-                        <span className="text-sm text-gray-500">tokens</span>
+                    <div className="flex  items-center justify-between">
+                      <div className=" flex items-center ">
+                        <img
+                  src="/fire.png"
+                  alt="BookHive"
+                  className="w-8 h-8 rounded-xl shadow-sm"
+                />
+                        <span className="text-2xl font-bold text-amber-500"> {book.token}</span>
+                       
                       </div>
                       <button
                         onClick={() => handleViewBook(book._id)}
-                        className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
+                        className="flex items-center space-x-2 bg-amber-800 hover:bg-amber-900 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
                       >
                         <Eye className="h-4 w-4" />
                         <span>View</span>
