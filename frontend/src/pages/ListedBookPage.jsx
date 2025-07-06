@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import {
   BookOpen,
   Edit3,
@@ -21,7 +22,8 @@ import {
   AlertCircle
 } from 'lucide-react';
 import Navbar from '../components/navbar';
-
+import './../App.css';
+import Footer1 from '../ui/footer';
 const MyListedBooksPage = () => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -214,18 +216,29 @@ const MyListedBooksPage = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+      <div className="font min-h-screen bg-amber-300">
         {/* Header */}
-        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">My Listed Books</h1>
-                <p className="text-xl text-gray-600">Manage your book listings and track performance</p>
+        <div className="bg-amber-400 backdrop-blur-sm  border-b-4 border-amber-700">
+          <div className="max-w-7xl  px-2 sm:px-6 lg:px-2">
+            <div className="flex items-center ">
+            
+              <div className='flex items-center justify-center'>
+                 <div className="h-[300px] w-[300px]">
+               
+              <DotLottieReact
+      src="https://lottie.host/3f7a6a58-d3d4-4ec2-b0a5-98ce8bc8c6db/2jJIo0gWbv.lottie"
+      loop
+      autoplay
+    />
+              </div>
+              <div className='flex flex-col'>
+                <h1 className="font2 text-7xl font-bold text-gray-900 mb-2">My Listed Books</h1>
+                <p className="font3 text-2xl tracking-wider text-gray-900">Manage your book listings and track performance</p>
+              </div>
               </div>
               <button
                 onClick={() => window.location.href = '/sell-book'}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center space-x-2"
+                className="bg-gradient-to-r from-amber-600 to-amber-800 text-white ml-32 px-6 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center space-x-2"
               >
                 <Plus className="h-5 w-5" />
                 <span>Add New Book</span>
@@ -236,7 +249,7 @@ const MyListedBooksPage = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Filters and Search */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+          <div className="bg-yellow-200 rounded-2xl shadow-sm border border-amber-800 p-6 mb-8">
             <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
               {/* Search */}
               <div className="relative flex-1 max-w-md">
@@ -246,16 +259,16 @@ const MyListedBooksPage = () => {
                   placeholder="Search your books..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 border border-amber-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 />
               </div>
 
               {/* Filters */}
-              <div className="flex flex-wrap gap-4">
+              <div className="flex  flex-wrap gap-4">
                 <select
                   value={selectedCondition}
                   onChange={(e) => setSelectedCondition(e.target.value)}
-                  className="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="px-4 py-2.5 border border-amber-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 >
                   <option value="all">All Conditions</option>
                   <option value="excellent">Excellent</option>
@@ -267,7 +280,7 @@ const MyListedBooksPage = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="px-4 py-2.5 border border-amber-800 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 >
                   <option value="newest">Newest First</option>
                   <option value="oldest">Oldest First</option>
@@ -278,7 +291,7 @@ const MyListedBooksPage = () => {
               </div>
 
               {/* Results Count */}
-              <div className="flex items-center space-x-2 text-gray-600">
+              <div className="flex items-center space-x-2 text-amber-900">
                 <Filter className="h-4 w-4" />
                 <span className="text-sm font-medium">{filteredBooks.length} books listed</span>
               </div>
@@ -336,7 +349,7 @@ const MyListedBooksPage = () => {
               {filteredBooks.map((book) => (
                 <div
                   key={book._id}
-                  className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+                  className="bg-yellow-200 rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <div className="md:flex">
                     {/* Book Image */}
@@ -417,10 +430,14 @@ const MyListedBooksPage = () => {
 
                         <div className="bg-gray-50 rounded-lg p-3">
                           <div className="flex items-center mb-1">
-                            <DollarSign className="w-4 h-4 text-gray-500 mr-1" />
-                            <span className="text-xs font-medium text-gray-600">Price</span>
+                           <img
+                  src="/fire.png"
+                  alt="BookHive"
+                  className="w-5 h-5 rounded-xl shadow-sm"
+                />
+                            <span className="text-xs font-medium text-gray-600"> Price</span>
                           </div>
-                          <p className="text-lg font-bold text-indigo-600">{book.token} tokens</p>
+                          <p className="text-lg font-bold text-amber-500">{book.token} tokens</p>
                         </div>
 
                         <div className="bg-gray-50 rounded-lg p-3">
@@ -459,7 +476,7 @@ const MyListedBooksPage = () => {
                         
                         <button
                           onClick={() => window.location.href = `/book/${book._id}`}
-                          className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-all duration-300 flex items-center space-x-2"
+                          className="bg-amber-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-all duration-300 flex items-center space-x-2"
                         >
                           <Eye className="w-4 h-4" />
                           <span>View Listing</span>
@@ -509,6 +526,7 @@ const MyListedBooksPage = () => {
           </div>
         )}
       </div>
+      <Footer1/>
     </>
   );
 };

@@ -153,7 +153,7 @@ const NavBar = ({ currentPath = '/dashboard', onNavigate = () => {} }) => {
   const navigationItems = [
     { name: 'Dashboard', path: '/dashboard', icon: Home },
     { name: 'Browse Books', path: '/browse', icon: Grid3X3 },
-    { name: 'My Orders', path: '/myorders', icon: Package },
+    { name: 'My Orders', path: '/mylistedsells', icon: Package },
     { name: 'Orders to Me', path: '/orders-to-me', icon: FileText },
     { name: 'Sell Book', path: '/addsell', icon: Plus },
     { name: 'Earnings', path: '/YourEarnings', icon: TrendingUp },
