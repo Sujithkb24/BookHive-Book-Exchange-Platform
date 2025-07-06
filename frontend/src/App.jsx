@@ -22,14 +22,23 @@ function App() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-
-    const minLoadTime = setTimeout(() => {
-      setLoading(false);
-    }, 1500); 
-
-    return () => clearTimeout(minLoadTime);
-  }, [location]);
+  setLoading(true);
+  
+  // Hide overflow when loading starts
+  document.body.style.overflowY = 'hidden';
+  
+  const minLoadTime = setTimeout(() => {
+    setLoading(false);
+    // Restore overflow when loading ends
+    document.body.style.overflowY = 'auto';
+  }, 1500);
+  
+  return () => {
+    clearTimeout(minLoadTime);
+    // Cleanup: restore overflow if component unmounts
+    document.body.style.overflowY = 'auto';
+  };
+}, [location]);
   return (
      <div>
       {loading && <Loader />}

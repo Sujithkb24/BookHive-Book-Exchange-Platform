@@ -1,10 +1,11 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { BookOpen, Eye, Search, Filter } from 'lucide-react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { Search, Filter, ChevronDown, SortAsc, SortDesc, X, BookOpen, Eye, Plus } from 'lucide-react';;
 import Navbar from '../components/navbar';
 import { useNavigate } from 'react-router-dom';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
     import { gsap } from 'gsap';
 const BooksDashboard = () => {
+  // Your existing state
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,41 +14,61 @@ const BooksDashboard = () => {
   const [imageErrors, setImageErrors] = useState({});
   const navigate = useNavigate();
 
+  // New filter states
+  const [filterBy, setFilterBy] = useState('all');
+  const [sortBy, setSortBy] = useState('bookName');
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [priceRange, setPriceRange] = useState([0, 100]);
+  const [showFilters, setShowFilters] = useState(false);
 
-  const handleClick = () => {
-    navigate('/addsell');
-  };
- 
-
-
+  // Your existing refs
   const titleRef = useRef(null);
   const subtitleRef = useRef(null);
   const descriptionRef = useRef(null);
   const buttonRef = useRef(null);
 
- useEffect(() => {
-  const elements = [
-    titleRef.current,
-    subtitleRef.current,
-    descriptionRef.current,
-    buttonRef.current
-  ].filter(el => el !== null); // Filter out nulls
+  // Your existing handlers
+  const handleClick = () => {
+    navigate('/addsell');
+  };
 
-  if (elements.length > 0) {
-    gsap.fromTo(
-      elements,
-      { opacity: 0, y: 30 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        stagger: 0.2,
-        ease: 'power3.out'
-      }
-    );
-  }
-}, []);
-  // Fetch books from backend
+  const handleViewBook = (bookId) => {
+    console.log(`Viewing book with ID: ${bookId}`);
+    navigate(`/book/${bookId}`);
+  };
+
+  const handleImageError = (bookId) => {
+    setImageErrors(prev => ({
+      ...prev,
+      [bookId]: true
+    }));
+  };
+
+  // Your existing GSAP animation
+  useEffect(() => {
+    const elements = [
+      titleRef.current,
+      subtitleRef.current,
+      descriptionRef.current,
+      buttonRef.current
+    ].filter(el => el !== null);
+
+    if (elements.length > 0) {
+      gsap.fromTo(
+        elements,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          ease: 'power3.out'
+        }
+      );
+    }
+  }, []);
+
+  // Your existing API fetch
   const backendapi = 'http://localhost:3000';
   useEffect(() => {
     const fetchBooks = async () => {
@@ -68,11 +89,17 @@ const BooksDashboard = () => {
         const data = await response.json();
         console.log('Fetched books:', data);
         setBooks(data.allSells || []);
-        setFilteredBooks(data.allSells || []);
+        
+        // Set initial price range based on fetched data
+        if (data.allSells && data.allSells.length > 0) {
+          const tokens = data.allSells.map(book => book.token || 0);
+          const minPrice = Math.min(...tokens);
+          const maxPrice = Math.max(...tokens);
+          setPriceRange([minPrice, maxPrice]);
+        }
       } catch (err) {
         setError(err.message);
         setBooks([]);
-        setFilteredBooks([]);
       } finally {
         setLoading(false);
       }
@@ -81,25 +108,90 @@ const BooksDashboard = () => {
     fetchBooks();
   }, []);
 
-  // Handle search
+  // Get min and max price for range slider
+  const minPrice = books.length > 0 ? Math.min(...books.map(book => book.token || 0)) : 0;
+  const maxPrice = books.length > 0 ? Math.max(...books.map(book => book.token || 0)) : 100;
+
+  // Enhanced filter and sort logic
+  const processedBooks = useMemo(() => {
+    let filtered = books.filter(book => {
+      // Price range filter
+      if ((book.token || 0) < priceRange[0] || (book.token || 0) > priceRange[1]) {
+        return false;
+      }
+
+      // Search term filter
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        switch (filterBy) {
+          case 'id':
+            return (book._id || '').toString().includes(term);
+          case 'bookName':
+            return (book.bookName || '').toLowerCase().includes(term);
+          case 'authorName':
+            return (book.authorName || '').toLowerCase().includes(term);
+          default:
+            return (
+              (book.bookName || '').toLowerCase().includes(term) ||
+              (book.authorName || '').toLowerCase().includes(term) ||
+              (book._id || '').toString().includes(term)
+            );
+        }
+      }
+      return true;
+    });
+
+    // Sort books
+    filtered.sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case 'id':
+          aValue = a._id || '';
+          bValue = b._id || '';
+          break;
+        case 'bookName':
+          aValue = (a.bookName || '').toLowerCase();
+          bValue = (b.bookName || '').toLowerCase();
+          break;
+        case 'authorName':
+          aValue = (a.authorName || '').toLowerCase();
+          bValue = (b.authorName || '').toLowerCase();
+          break;
+        case 'token':
+          aValue = a.token || 0;
+          bValue = b.token || 0;
+          break;
+        default:
+          aValue = (a.bookName || '').toLowerCase();
+          bValue = (b.bookName || '').toLowerCase();
+      }
+
+      if (typeof aValue === 'string') {
+        return sortOrder === 'asc' 
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      } else {
+        return sortOrder === 'asc' 
+          ? aValue - bValue
+          : bValue - aValue;
+      }
+    });
+
+    return filtered;
+  }, [books, searchTerm, filterBy, sortBy, sortOrder, priceRange]);
+
+  // Update filteredBooks when processedBooks changes
   useEffect(() => {
-    const filtered = books.filter(book =>
-      book.bookName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      book.authorName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredBooks(filtered);
-  }, [searchTerm, books]);
+    setFilteredBooks(processedBooks);
+  }, [processedBooks]);
 
-  const handleViewBook = (bookId) => {
-    console.log(`Viewing book with ID: ${bookId}`);
-    navigate(`/book/${bookId}`);
-  };
-
-  const handleImageError = (bookId) => {
-    setImageErrors(prev => ({
-      ...prev,
-      [bookId]: true
-    }));
+  const clearFilters = () => {
+    setSearchTerm('');
+    setFilterBy('all');
+    setSortBy('bookName');
+    setSortOrder('asc');
+    setPriceRange([minPrice, maxPrice]);
   };
 
   const getConditionColor = (condition) => {
@@ -238,32 +330,130 @@ const BooksDashboard = () => {
         {/* Main Content */}
         <div className=" mx-auto px-4 bg-orange-100 sm:px-6 lg:px-8 py-8">
           {/* Search and Filter Bar */}
-          <div className="mb-8">
-            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search books or authors..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm"
-                />
-              </div>
-              <div className="flex items-center space-x-2 text-gray-600 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-200">
-                <Filter className="h-4 w-4" />
-                <span className="text-sm font-medium">{filteredBooks.length} books available</span>
-              </div>
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+            <div className="relative flex-1 max-w-3xl">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search books or authors..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm"
+              />
             </div>
+            
+            {/* Filter Toggle Button */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center space-x-2 bg-indigo-600 text-white px-4 py-3 rounded-xl hover:bg-indigo-700 transition-colors shadow-sm"
+            >
+              <Filter className="h-4 w-4" />
+              <span className="text-sm font-medium">Advanced Filters</span>
+              <ChevronDown className={`h-4 w-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+            </button>
+
+            
           </div>
 
-          {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
-              <p className="text-red-800 text-sm">
-                <strong>Error:</strong> {error}
-              </p>
+          {/* Advanced Filters */}
+          {showFilters && (
+            <div className="mt-6 bg-white rounded-xl shadow-lg p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Filter By */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Filter By</label>
+                  <select
+                    value={filterBy}
+                    onChange={(e) => setFilterBy(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  >
+                    <option value="all">All Fields</option>
+                    <option value="id">Book ID</option>
+                    <option value="bookName">Book Name</option>
+                    <option value="authorName">Author Name</option>
+                  </select>
+                </div>
+
+                {/* Sort By */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  >
+                    <option value="bookName">Book Name</option>
+                    <option value="authorName">Author Name</option>
+                    <option value="id">Book ID</option>
+                    <option value="token">Price (Tokens)</option>
+                  </select>
+                </div>
+
+                {/* Sort Order */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Sort Order</label>
+                  <button
+                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                    className="w-full flex items-center justify-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                  >
+                    {sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
+                    <span className="capitalize">{sortOrder}ending</span>
+                  </button>
+                </div>
+
+                {/* Clear Filters */}
+                <div className="flex items-end">
+                  <button
+                    onClick={clearFilters}
+                    className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                    <span>Clear All</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Price Range */}
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Price Range: {priceRange[0]} - {priceRange[1]} tokens
+                </label>
+                <div className="flex items-center space-x-4">
+                  <input
+                    type="range"
+                    min={minPrice}
+                    max={maxPrice}
+                    value={priceRange[0]}
+                    onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                    className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  />
+                  <input
+                    type="range"
+                    min={minPrice}
+                    max={maxPrice}
+                    value={priceRange[1]}
+                    onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                    className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>{minPrice} tokens</span>
+                  <span>{maxPrice} tokens</span>
+                </div>
+              </div>
             </div>
           )}
+        </div>
+
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
+            <p className="text-red-800 text-sm">
+              <strong>Error:</strong> {error}
+            </p>
+          </div>
+        )}
+
 
           {/* Books Grid */}
           {filteredBooks.length === 0 ? (
