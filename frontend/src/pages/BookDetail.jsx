@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Heart, ShoppingCart, Star, User, BookOpen, Hash, DollarSign, Package, CheckCircle } from 'lucide-react';
 import Navbar from '../components/navbar';
 import { useParams } from 'react-router-dom';
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 const BookDetailsPage = () => {
   const [bookData, setBookData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -53,7 +55,8 @@ const BookDetailsPage = () => {
     }
   };
 
-  const handleAddToCart = async () => {
+ const handleAddToCart = async () => {
+  try {
     setIsAddingToCart(true);
 
     const response = await fetch(`http://localhost:3000/api/auth/addtocart`, {
@@ -64,17 +67,49 @@ const BookDetailsPage = () => {
       },
       body: JSON.stringify({ bookId: bookIdToUse })
     });
-    
+
     const data = await response.json();
     console.log('Book added to cart:', data);
-    if(!data.success) {
-      alert(data.message);
-      setIsAddingToCart(false);
+
+    if (!data.success) {
+      toast.error(data.message || 'Failed to add book to cart', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
     } else {
-      alert('Book added to cart successfully!');
-      setIsAddingToCart(false);
+      toast.success('Book added to cart successfully!', {
+        position: 'top-center',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
     }
-  };
+  } catch (error) {
+    console.error('Error adding book to cart:', error);
+    toast.error('Something went wrong. Please try again.', {
+      position: 'top-right',
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: 'colored',
+    });
+  } finally {
+    setIsAddingToCart(false);
+  }
+};
+
+
+  
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
@@ -152,7 +187,7 @@ const BookDetailsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      
+       <ToastContainer />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <div className="lg:flex">
@@ -237,11 +272,11 @@ const BookDetailsPage = () => {
             </div>
 
             {/* Book Details */}
-            <div className="lg:w-1/2 p-8">
+            <div className="font lg:w-1/2 p-8">
               <div className="space-y-6">
                 {/* Header */}
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{sell.bookName}</h1>
+                  <h1 className="font2 text-5xl font-bold text-amber-900 mb-2">{sell.bookName}</h1>
                   <p className="text-xl text-gray-600 mb-4">by {sell.authorName}</p>
                   
                   <div className="flex items-center space-x-4 mb-4">
@@ -252,13 +287,17 @@ const BookDetailsPage = () => {
                 </div>
 
                 {/* Price */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6">
+                <div className="bg-gradient-to-r from-amber-400 to-orange-500 rounded-xl p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-3xl font-bold text-blue-600">{sell.token} Tokens</span>
-                      <p className="text-sm text-gray-600 mt-1">Exchange tokens for books</p>
+                      <span className="text-3xl font-bold text-amber-950">{sell.token} Tokens</span>
+                      <p className="text-sm text-gray-800 mt-1">Exchange tokens for books</p>
                     </div>
-                    <DollarSign className="h-8 w-8 text-blue-600" />
+                   <img
+                  src="/fire.png"
+                  alt="BookHive"
+                  className="w-15 h-15 rounded-xl shadow-sm"
+                />
                   </div>
                 </div>
 
@@ -313,8 +352,8 @@ const BookDetailsPage = () => {
                       addedToCart
                         ? 'bg-green-600 hover:bg-green-700'
                         : isAddingToCart
-                        ? 'bg-blue-400 cursor-not-allowed'
-                        : 'bg-blue-600 hover:bg-blue-700 hover:scale-105 active:scale-95'
+                        ? 'bg-amber-400 cursor-not-allowed'
+                        : 'bg-amber-600 hover:bg-amber-700 hover:scale-105 active:scale-95'
                     } shadow-lg hover:shadow-xl`}
                   >
                     <div className="flex items-center justify-center">

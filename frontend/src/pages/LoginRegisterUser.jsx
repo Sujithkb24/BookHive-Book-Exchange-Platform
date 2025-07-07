@@ -368,7 +368,7 @@ const AuthForm = () => {
                       <label className="block text-sm font-semibold text-gray-700  ">
                         Username
                       </label>
-                      <div className="relative">
+                      <div ref={parentRef} className="relative">
                         <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700 w-5 h-5" />
                         <input
                           type="text"
