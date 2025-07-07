@@ -11,8 +11,8 @@ export default function NavBar() {
         <div className="flex items-center space-x-3">
           <img
             src="/favicon.png"
-            alt="Logo"
-            className="w-8 h-8 rounded-full shadow"
+                  alt="BookHive"
+                  className="w-10 h-10 rounded-xl shadow-sm"
           />
           <span className="text-white text-xl font-semibold tracking-wide">
             BookHive

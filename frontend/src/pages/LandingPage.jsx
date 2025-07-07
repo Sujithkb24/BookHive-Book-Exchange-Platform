@@ -1,6 +1,9 @@
 import React, { useState, useEffect,useRef } from 'react';
 import { ChevronDown, BookOpen, Users, Star, ArrowRight, Menu, X, Check, Mail, Phone, MapPin, Sun, Moon, Book, TrendingUp, Eye, Heart } from 'lucide-react';
-
+import { useNavigate } from "react-router-dom";
+import AnimatedBackground from '../ui/meteors';
+import RainBackground from '../ui/rain';
+import Footer1 from'../ui/footer';
 const BookExchangeLanding = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
@@ -9,7 +12,7 @@ const BookExchangeLanding = () => {
   const [visibleItems, setVisibleItems] = useState([]);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
-
+  const navigate = useNavigate();
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll);
@@ -19,6 +22,65 @@ const BookExchangeLanding = () => {
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
   };
+
+
+   const vantaRef = useRef(null);
+  const [vantaEffect, setVantaEffect] = useState(null);
+
+  useEffect(() => {
+    if (!vantaEffect && window.VANTA) {
+      setVantaEffect(
+        window.VANTA.FOG({
+          el: vantaRef.current,
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200.0,
+          minWidth: 200.0,
+          speed: 2.0,
+          zoom: 1.1,
+        })
+      );
+    }
+
+    return () => {
+      if (vantaEffect) vantaEffect.destroy();
+    };
+  }, [vantaEffect]);
+
+  const vantaRef2 = useRef(null);
+  const [vantaEffect2, setVantaEffect2] = useState(null);
+
+  useEffect(() => {
+    if (!vantaEffect2 && window.VANTA) {
+      setVantaEffect2(
+        window.VANTA.BIRDS({
+          el: vantaRef2.current,
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200.0,
+          minWidth: 200.0,
+          scale: 1.0,
+          scaleMobile: 1.0,
+          backgroundColor: 0xffffff,
+          color1: 0x6f0909,
+          color2: 0x081e24,
+          birdSize: 1.6,
+          wingSpan: 34.0,
+          speedLimit: 8.0,
+          separation: 88.0,
+          alignment: 57.0,
+          cohesion: 13.0,
+          quantity: 4.0,
+        })
+      );
+    }
+
+    return () => {
+      if (vantaEffect2) vantaEffect2.destroy();
+    };
+  }, [vantaEffect2]);
 
   // Enhanced animated card component with hover effects
  const AnimatedCard = ({ children, delay = 0 }) => {
@@ -70,7 +132,7 @@ const BookExchangeLanding = () => {
   };
 
   const GradientText = ({ children, className = "" }) => (
-    <span className={`bg-gradient-to-r from-orange-400 via-yellow-500 to-orange-600 bg-clip-text text-transparent ${className}`}>
+    <span className={`bg-gradient-to-r from-orange-200 via-yellow-300 to-amber-100  bg-clip-text text-transparent ${className}`}>
       {children}
     </span>
   );
@@ -146,7 +208,7 @@ const BookExchangeLanding = () => {
         <div className="w-[800px] text-center">
           <GradientText className="text-6xl md:text-8xl">
             {displayText}
-            <span className={`animate-pulse ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>|</span>
+            <span className={`animate-pulse ${isDarkMode ? 'text-orange-600' : 'text-orange-800'}`}>|</span>
           </GradientText>
         </div>
       </div>
@@ -414,16 +476,16 @@ const BookExchangeLanding = () => {
     : books.filter(book => book.genre === selectedCategory);
 
   return (
-    <div className={`min-h-screen ${themeClasses.bg} ${themeClasses.text} overflow-x-hidden transition-colors duration-300`}>
+    <div className={`min-h-screen bg-white/30 ${themeClasses.text} overflow-x-hidden transition-colors duration-300`}>
       {/* Navigation */}
-      <nav className={`fixed top-0 w-full z-50 backdrop-blur-xl ${themeClasses.navBg} border-b ${themeClasses.navBorder} transition-colors duration-300`}>
+      <nav className={`fixed top-0 w-full z-50 backdrop-blur-xl bg-white/30 border-b ${themeClasses.navBorder} transition-colors duration-300`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
            <div className="flex items-center space-x-2">
               <a href="#home">
                  <img src='/favicon.png' className='w-[50px] h-[50px]' alt="BookHive Logo" />
                </a>
-              <a href="#home" className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-yellow-500 bg-clip-text text-transparent">
+              <a href="#home" className="text-2xl font-bold bg-gradient-to-r from-orange-800 to-yellow-700 bg-clip-text text-transparent">
                  BookHive
                </a>
            </div>
@@ -447,7 +509,7 @@ const BookExchangeLanding = () => {
                 {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </button>
               
-              <button className="bg-gradient-to-r from-orange-500 to-yellow-500 px-6 py-2 rounded-full font-semibold hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-300 text-white">
+              <button  onClick={() => navigate("/Login")} className="bg-gradient-to-r from-orange-900 to-yellow-700 px-6 py-2 rounded-full font-semibold hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-300 text-white">
                 Get Started
               </button>
             </div>
@@ -489,12 +551,11 @@ const BookExchangeLanding = () => {
 
       {/* Hero Section */}
       
-      <div className={`min-h-screen ${isDarkMode ? 'bg-[#7b4019] text-white' : 'bg-[#ffeea9] text-[#7b4019]'} transition-colors duration-500`}>
+      <div ref={vantaRef} className={`font min-h-screen ${isDarkMode ? ' text-white' : ' text-[#7b4019]'} transition-colors duration-500`}>
       
       {/* Hero Section */}
       <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Animated Background */}
-        <div className={`absolute inset-0 ${isDarkMode ? 'bg-gradient-to-br from-[#7b4019]/20 via-[#7b4019] to-[#ff7d29]/20' : 'bg-gradient-to-br from-[#ffbf78]/20 via-[#ffeea9] to-[#ff7d29]/20'} animate-gradient-shift`}></div>
         
         {/* Floating Orbs */}
         <div className="absolute inset-0">
@@ -510,21 +571,21 @@ const BookExchangeLanding = () => {
         <FloatingBook position="bottom-20 right-10" delay={8000} size="w-7 h-7" />
         <FloatingBook position="top-1/2 left-8" delay={10000} size="w-5 h-5" />
 
-        <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
+        <div className="mt-18 relative z-10 text-center px-4 max-w-9xl mx-auto">
           <div className="mb-8 animate-fade-in">
-            <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight">
+            <h1 className="font2 text-7xl md:text-7xl text-black font-black mb-6 leading-tight">
               Exchange Books,
               <br />
               <TypewriterText />
             </h1>
-            <p className={`text-xl md:text-2xl ${themeClasses.textSecondary} mb-8 max-w-3xl mx-auto font-light animate-fade-in-delay`}>
+            <p className={`font  tracking-wider font-bold text-xl md:text-2xl text-amber-950 mb-8 max-w-4xl mx-auto  animate-fade-in-delay`}>
               Join the revolutionary platform where book lovers connect, trade, and discover their next favorite read.
               Transform your bookshelf into a gateway to endless literary adventures.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 animate-fade-in-delay-2">
-            <button className="group bg-gradient-to-r from-[#ff7d29] to-[#ffbf78] px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl hover:shadow-[#ff7d29]/25 transition-all duration-300 transform hover:scale-105 text-white">
+            <button   onClick={() => navigate("/Login")} className="group bg-gradient-to-r from-orange-600 to-yellow-600 px-8 py-4 rounded-full font-bold text-lg hover:shadow-2xl hover:shadow-[#ff7d29]/25 transition-all duration-300 transform hover:scale-105 text-white">
               Start Trading Books
               <ArrowRight className="inline ml-2 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -533,21 +594,7 @@ const BookExchangeLanding = () => {
             </button>
           </div>
 
-          <div className="flex flex-row items-center justify-center  gap-8 m-6  mt-16">
-            {[
-              { number: '50K+', label: 'Active Traders', icon: Users },
-              { number: '200K+', label: 'Books Exchanged', icon: BookOpen },
-              { number: '4.9★', label: 'User Rating', icon: Star }
-            ].map((stat, index) => (
-              <AnimatedCard key={index} delay={index * 200}>
-                <div className={`${themeClasses.cardBg} backdrop-blur-xl rounded-2xl p-6 border ${themeClasses.cardBorder} ${themeClasses.cardHover} transition-all duration-300 hover:scale-105`}>
-                  <stat.icon className="h-8 w-8 text-[#ff7d29] mb-4 mx-auto" />
-                  <div className="text-3xl font-bold mb-2">{stat.number}</div>
-                  <div className={themeClasses.textMuted}>{stat.label}</div>
-                </div>
-              </AnimatedCard>
-            ))}
-          </div>
+          
         </div>
 
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
@@ -617,19 +664,18 @@ const BookExchangeLanding = () => {
 
 
       {/* About Section */}
-     <div className={`min-h-screen ${isDarkMode ? 'bg-[#7b4019] text-white' : 'bg-[#ffeea9] text-[#7b4019]'} transition-colors duration-500`}>
-      {/* Theme Toggle */}
-      
+     <div ref={vantaRef2} className={`font min-h-screen ${isDarkMode ? ' text-amber-900' : ' text-[#7b4019]'} transition-colors duration-500`}>
+      {/* Theme Toggle */}      
 
       {/* About Section */}
       <section id="about" className="py-20 px-4 relative overflow-hidden"> 
 
         <div className="max-w-7xl mx-auto relative z-10"> 
           <div className="text-center mb-16"> 
-            <h2 className="text-4xl md:text-6xl font-bold mb-6"> 
-              About <GradientText>BookHive</GradientText> 
+            <h2 className="font3 text-4xl tracking-widest md:text-9xl font-bold mb-6"> 
+              About BookHive
             </h2> 
-            <p className={`text-xl ${themeClasses.textSecondary} max-w-3xl mx-auto`}> 
+            <p className={`text-xl text-black max-w-3xl mx-auto`}> 
               Born from a passion for literature and community, BookHive revolutionizes how book enthusiasts  
               discover, share, and enjoy their favorite reads. 
             </p> 
@@ -638,7 +684,7 @@ const BookExchangeLanding = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center"> 
             <div className="space-y-6"> 
               <h3 className="text-3xl font-bold mb-4">Our Mission</h3> 
-              <p className={`${themeClasses.textSecondary} text-lg`}> 
+              <p className={`text-amber-950text-lg`}> 
                 We believe every book deserves multiple readers and every reader deserves access to countless stories.  
                 Our platform creates a sustainable ecosystem where literature flows freely between passionate readers. 
               </p> 
@@ -671,12 +717,12 @@ const BookExchangeLanding = () => {
             {/* Visual Timeline */}
             <div className="relative"> 
               <div className={`bg-gradient-to-br from-[#ff7d29]/20 to-[#ffbf78]/20 rounded-3xl p-8 backdrop-blur-xl border ${themeClasses.cardBorder}`}> 
-                <h4 className="text-2xl font-bold mb-8 text-center">Our Journey</h4>
+                <h4 className="font2 text-4xl font-bold mb-8 text-center">Our Journey</h4>
                 <div className="space-y-8">
                   {[ 
-                    { title: 'Founded', value: '2023', icon: Star, color: 'text-[#ffbf78]' }, 
-                    { title: 'Genres', value: '500+', icon: BookOpen, color: 'text-[#ff7d29]' }, 
-                    { title: 'Communities', value: '100+', icon: Users, color: 'text-[#7b4019]' } 
+                    { title: 'Founded', value: ' 2025', icon: Star, color: 'text-[#ffbf78]' }, 
+                    { title: 'Genres', value: ' 500+', icon: BookOpen, color: 'text-[#ff7d29]' }, 
+                    { title: 'Communities', value: ' 100+', icon: Users, color: 'text-[#7b4019]' } 
                   ].map((stat, index) => ( 
                     <div key={index} className="flex items-center space-x-4 group hover:scale-105 transition-transform duration-300"> 
                       <div className={`w-12 h-12 rounded-full bg-gradient-to-r from-[#ff7d29]/20 to-[#ffbf78]/20 flex items-center justify-center border ${themeClasses.cardBorder}`}>
@@ -685,7 +731,7 @@ const BookExchangeLanding = () => {
                       <div className="flex-1">
                         <div className="flex items-center justify-center">
                           <span className={`text-sm ${themeClasses.textMuted}`}>{stat.title}</span>
-                          <span className="text-2xl font-bold text-[#ff7d29]">{stat.value}</span>
+                          <span className="pl-3 text-2xl font-bold text-[#ff7d29]">{stat.value}</span>
                         </div>
                         <div className={`h-2 bg-gray-200/20 rounded-full mt-2 overflow-hidden`}>
                           <div 
@@ -755,11 +801,11 @@ const BookExchangeLanding = () => {
 
      {/* Features Section */}
 {/* Features Section */}
-<section id="features" className={`py-20 px-4 ${isDarkMode ? 'bg-gradient-to-br from-[#7B4019] to-[#5A2E12]' : 'bg-gradient-to-br from-[#FFEEA9] to-[#FFF8DC]'}`}>
+<section id="features" className={`font py-20 px-4 ${isDarkMode ? 'bg-gradient-to-br from-[#7B4019] to-[#5A2E12]' : 'bg-gradient-to-br from-[#FFEEA9] to-[#FFF8DC]'}`}>
   <div className="max-w-7xl mx-auto">
     <div className="text-center mb-16">
-      <h2 className={`text-4xl md:text-6xl font-bold mb-6 ${themeClasses.textPrimary}`}>
-        Powerful <GradientText>Features</GradientText>
+      <h2 className={`font3 text-4xl md:text-9xl tracking-widest font-bold mb-6 ${themeClasses.textPrimary}`}>
+        Powerful Features
       </h2>
       <p className={`text-xl ${themeClasses.textSecondary} max-w-3xl mx-auto`}>
         Everything you need to trade, discover, and enjoy books in one seamless platform
@@ -822,13 +868,14 @@ const BookExchangeLanding = () => {
     </div>
   </div>
 </section>
-
+<AnimatedBackground>
 {/* Testimonials */}
-<section className={`py-20 px-4 ${themeClasses.sectionBg}`}>
+<section className={`font py-20 px-4 `}>
+  
   <div className="max-w-7xl mx-auto">
     <div className="text-center mb-16">
-      <h2 className={`text-4xl md:text-6xl font-bold mb-6 ${themeClasses.textPrimary}`}>
-        What Our <GradientText>Users Say</GradientText>
+      <h2 className={`font3 text-4xl md:text-9xl tracking-wider font-bold mb-6 text-yellow-800`}>
+        What Our Users Say
       </h2>
     </div>
 
@@ -837,7 +884,7 @@ const BookExchangeLanding = () => {
         {
           name: 'Sarah Chen',
           role: 'Avid Reader',
-          quote: 'BookSwap transformed my reading experience. I\'ve discovered amazing books I never would have found otherwise!',
+          quote: 'BookSwap transformed my reading  I\'ve discovered  books I never would have found otherwise!',
           rating: 5,
           avatar: '👩‍💼'
         },
@@ -857,11 +904,11 @@ const BookExchangeLanding = () => {
         }
       ].map((testimonial, index) => (
         <AnimatedCard key={index} delay={index * 200}>
-          <div className={`${themeClasses.cardBg} backdrop-blur-xl rounded-2xl p-8 border ${themeClasses.cardBorder} ${themeClasses.cardHover} transition-all duration-300`}>
+          <div className={`bg-black/30 opacity-90 backdrop-blur-xl rounded-2xl p-8 border ${themeClasses.cardBorder} ${themeClasses.cardHover} transition-all duration-300`}>
             <div className="flex items-center mb-6">
               <div className="text-4xl mr-4">{testimonial.avatar}</div>
               <div>
-                <div className={`font-bold ${themeClasses.textPrimary}`}>{testimonial.name}</div>
+                <div className={`font-bold text-white`}>{testimonial.name}</div>
                 <div className={themeClasses.textMuted}>{testimonial.role}</div>
               </div>
             </div>
@@ -876,99 +923,17 @@ const BookExchangeLanding = () => {
       ))}
     </div>
   </div>
+  
 </section>
+</AnimatedBackground>
 
 {/* Book Store Section */}
-<div className={`min-h-screen ${isDarkMode 
-  ? 'bg-gradient-to-br from-amber-900 via-orange-800 to-amber-900 text-white' 
-  : 'bg-gradient-to-br from-amber-100 via-orange-100 to-amber-50 text-gray-900'
-}`}>
-  {/* Floating background elements */}
-  <div className="fixed inset-0 overflow-hidden pointer-events-none">
-    <FloatingElement delay={0} duration={8} />
-    <FloatingElement delay={2} duration={10} />
-    <FloatingElement delay={4} duration={6} />
-  </div>
 
-  {/* Book Store Section */}
-  <section className="relative py-24 px-4">
-    <div className="max-w-7xl mx-auto">
-      {/* Enhanced header with animated elements */}
-      <div className="text-center mb-20 relative">
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-8">
-          <div className={`w-32 h-1 bg-gradient-to-r from-transparent ${isDarkMode ? 'via-orange-400' : 'via-orange-600'} to-transparent animate-pulse`} />
-        </div>
-        
-        <h2 className={`text-5xl md:text-7xl font-bold mb-8 relative ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-          Featured{' '}
-          <GradientText className="relative">
-            Books
-            <div className={`absolute -inset-2 bg-gradient-to-r ${isDarkMode ? 'from-orange-400/20 to-amber-400/20' : 'from-orange-600/10 to-amber-600/10'} blur-xl -z-10 animate-pulse`} />
-          </GradientText>
-        </h2>
-        
-        <p className={`text-xl ${isDarkMode ? 'text-amber-200' : 'text-gray-700'} max-w-4xl mx-auto leading-relaxed mb-12`}>
-          Discover trending books available for exchange in our vibrant community. 
-          Join thousands of readers sharing their favorite stories.
-        </p>
-
-        {/* Category filter with animation */}
-        <div className="flex flex-wrap justify-center gap-3 mb-8">
-          {categories.map((category, index) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
-                selectedCategory === category
-                  ? 'bg-gradient-to-r from-amber-800 to-orange-500 text-white shadow-lg shadow-orange-500/25 scale-105'
-                  : isDarkMode 
-                    ? 'bg-white/10 text-amber-200 hover:bg-white/20 hover:text-white'
-                    : 'bg-black/10 text-gray-700 hover:bg-black/20 hover:text-gray-900'
-              }`}
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Enhanced book grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {filteredBooks.map((book, index) => (
-          <BookCard key={`${book.title}-${selectedCategory}`} book={book} index={index} />
-        ))}
-      </div>
-
-      {/* Call to action */}
-      <div className="text-center mt-16">
-        <button className="bg-gradient-to-r from-amber-700 via-orange-500 to-amber-400 px-8 py-4 rounded-2xl font-semibold text-lg hover:shadow-xl hover:shadow-orange-500/25 transition-all duration-300 hover:scale-105 group text-white">
-          Explore All Books
-          <ArrowRight className="inline-block ml-2 group-hover:translate-x-1 transition-transform duration-300" size={20} />
-        </button>
-      </div>
-    </div>
-  </section>
-
-  {/* CSS for custom animations */}
-  <style jsx>{`
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-20px) rotate(5deg); }
-    }
-    
-    .line-clamp-2 {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-  `}</style>
-</div>
 
 
 {/* Roadmap */}
-     <div className={`min-h-screen ${isDarkMode ? 'bg-gradient-to-br from-amber-900 via-orange-900/20 to-amber-900' : 'bg-gradient-to-br from-amber-50 via-orange-50/20 to-amber-50'} text-white`}>
+
+     <div className={`font min-h-screen  text-white`}>
       <section id="roadmap" className="py-20 px-4 relative overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute inset-0 opacity-10">
@@ -979,8 +944,8 @@ const BookExchangeLanding = () => {
 
         <div className="max-w-7xl mx-auto relative">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in-up">
-              Our <GradientText>Roadmap</GradientText>
+            <h2 className="font3 tracking-wider text-4xl text-amber-900 md:text-9xl font-bold mb-6 animate-fade-in-up">
+              Our Roadmap
             </h2>
             <p className={`text-xl ${themeClasses.textSecondary} max-w-3xl mx-auto animate-fade-in-up`} style={{animationDelay: '0.2s'}}>
               Exciting features and improvements coming to BookSwap
@@ -1079,6 +1044,7 @@ const BookExchangeLanding = () => {
               </div>
             ))}
           </div>
+          
 
           {/* Call to action */}
           <div className={`text-center mt-16 transform transition-all duration-700 ${
@@ -1122,15 +1088,15 @@ const BookExchangeLanding = () => {
       </section>
     </div>
 
-
+<RainBackground>
 {/* FAQ */}
-      <div className={`min-h-screen ${isDarkMode ? 'bg-amber-900' : 'bg-white'}`}>
+      <div className={`font min-h-screen `}>
       {/* FAQ */}
-      <section className={`py-20 px-4 ${isDarkMode ? 'bg-orange-800/30' : 'bg-white'}`}>
+      <section className={`py-20 px-4 `}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-6xl font-bold mb-6">
-              <GradientText>FAQ</GradientText>
+            <h2 className="font3 tracking-wider text-4xl md:text-9xl text-amber-900 font-bold mb-6">
+            FAQ
             </h2>
             <p className={`text-xl ${themeClasses.textSecondary} max-w-3xl mx-auto`}>
               Find answers to common questions about BookSwap
@@ -1146,7 +1112,7 @@ const BookExchangeLanding = () => {
               <div 
                 key={index}
                 className={`
-                  ${themeClasses.cardBg} backdrop-blur-xl rounded-2xl p-6 border ${themeClasses.cardBorder}
+                  bg-amber-500/50 backdrop-blur-xl rounded-2xl p-6 border ${themeClasses.cardBorder}
                   transform transition-all duration-500 ease-out
                   opacity-0 translate-y-10
                   animate-fade-in-up
@@ -1157,7 +1123,7 @@ const BookExchangeLanding = () => {
                 }}
               >
                 <div className="flex items-start justify-between">
-                  <h3 className="text-xl font-bold text-orange-400 pr-4">{faq.q}</h3>
+                  <h3 className="text-xl font-bold text-orange-600 pr-4">{faq.q}</h3>
                   <ChevronDown className="h-5 w-5 text-orange-400" />
                 </div>
                 <div className={`mt-3 ${themeClasses.textSecondary}`}>
@@ -1207,14 +1173,14 @@ const BookExchangeLanding = () => {
         }
       `}</style>
       </div>
-
+</RainBackground>
 
 {/* Contact */}
-<section id="contact" className={`py-24 px-4 ${themeClasses.sectionBg}`}>
+<section id="contact" className={`font py-24 px-4 ${themeClasses.sectionBg}`}>
   <div className="max-w-7xl mx-auto">
     <div className="text-center mb-20">
-      <h2 className={`text-4xl md:text-6xl font-bold mb-6 ${themeClasses.text}`}>
-        Get In <GradientText>Touch</GradientText>
+      <h2 className={`font3 text-4xl md:text-9xl text-amber-900 tracking-wider font-bold mb-6 `}>
+        Get In Touch
       </h2>
       <p className={`text-xl md:text-2xl ${themeClasses.textSecondary} max-w-3xl mx-auto`}>
         Have questions? We'd love to hear from you. Send us a message and we'll respond within 24 hours.
@@ -1373,132 +1339,8 @@ const BookExchangeLanding = () => {
     </div>
   </div>
 </section>
+<Footer1/>
 
-{/*/footer */}
-<footer className={`py-16 px-4 ${themeClasses.footerBg} border-t ${themeClasses.footerBorder} transition-colors duration-300`}>
-  <div className="max-w-7xl mx-auto">
-    <div className="grid md:grid-cols-5 gap-10 mb-12">
-      {/* Brand Column */}
-      <div className="md:col-span-2">
-        <div className="flex items-center space-x-3 mb-6">
-          <BookOpen className="h-10 w-10 text-orange-500" />
-          <span className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-amber-500 bg-clip-text text-transparent">
-            BookSwap
-          </span>
-        </div>
-        <p className={`${themeClasses.textSecondary} mb-6 text-lg`}>
-          Connecting book lovers worldwide through the joy of sharing literature.
-        </p>
-        <div className="flex space-x-4">
-          {['twitter', 'facebook', 'instagram', 'linkedin'].map((social) => (
-            <a 
-              key={social} 
-              href="#" 
-              className={`p-2 rounded-full ${themeClasses.cardBg} ${themeClasses.cardBorder} border hover:border-orange-500 hover:text-orange-500 transition-all duration-300`}
-              aria-label={`${social} link`}
-            >
-              {/* Replace with actual social icons or use react-icons */}
-              <span className="text-lg">{social === 'twitter' ? '𝕏' : social.charAt(0).toUpperCase()}</span>
-            </a>
-          ))}
-        </div>
-      </div>
-      
-      {/* Platform Links */}
-      <div>
-        <h4 className={`text-xl font-bold mb-5 ${themeClasses.text} flex items-center`}>
-          <ChevronDown className="mr-2 h-5 w-5 text-orange-400 md:hidden" />
-          Platform
-        </h4>
-        <div className={`space-y-3 ${themeClasses.textSecondary}`}>
-          {['How it Works', 'Features', 'Pricing', 'Mobile App'].map((item) => (
-            <a 
-              key={item} 
-              href="#" 
-              className="block hover:text-orange-400 transition-colors duration-200"
-            >
-              {item}
-            </a>
-          ))}
-        </div>
-      </div>
-      
-      {/* Community Links */}
-      <div>
-        <h4 className={`text-xl font-bold mb-5 ${themeClasses.text} flex items-center`}>
-          <ChevronDown className="mr-2 h-5 w-5 text-orange-400 md:hidden" />
-          Community
-        </h4>
-        <div className={`space-y-3 ${themeClasses.textSecondary}`}>
-          {['Book Clubs', 'Reviews', 'Events', 'Blog'].map((item) => (
-            <a 
-              key={item} 
-              href="#" 
-              className="block hover:text-orange-400 transition-colors duration-200"
-            >
-              {item}
-            </a>
-          ))}
-        </div>
-      </div>
-      
-      {/* Support Links */}
-      <div>
-        <h4 className={`text-xl font-bold mb-5 ${themeClasses.text} flex items-center`}>
-          <ChevronDown className="mr-2 h-5 w-5 text-orange-400 md:hidden" />
-          Support
-        </h4>
-        <div className={`space-y-3 ${themeClasses.textSecondary}`}>
-          {['Help Center', 'Contact Us', 'Privacy Policy', 'Terms of Service'].map((item) => (
-            <a 
-              key={item} 
-              href="#" 
-              className="block hover:text-orange-400 transition-colors duration-200"
-            >
-              {item}
-            </a>
-          ))}
-        </div>
-      </div>
-    </div>
-    
-    {/* Newsletter Subscription */}
-    <div className={`${themeClasses.cardBg} backdrop-blur-xl rounded-2xl p-8 border ${themeClasses.cardBorder} mb-12`}>
-      <div className="md:flex items-center justify-between">
-        <div className="md:w-1/2 mb-6 md:mb-0">
-          <h3 className="text-2xl font-bold mb-2">Stay Updated</h3>
-          <p className={themeClasses.textSecondary}>
-            Subscribe to our newsletter for the latest book releases and community updates.
-          </p>
-        </div>
-        <div className="md:w-1/2">
-          <div className="flex">
-            <input 
-              type="email" 
-              placeholder="Your email address" 
-              className={`flex-grow ${themeClasses.inputBg} border ${themeClasses.inputBorder} rounded-l-xl px-4 py-3 focus:outline-none focus:border-orange-500 transition-colors`}
-            />
-            <button className="bg-gradient-to-r from-orange-500 to-amber-500 px-6 py-3 rounded-r-xl font-semibold hover:shadow-lg hover:shadow-orange-500/25 transition-all duration-300 text-white">
-              Subscribe
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    {/* Copyright */}
-    <div className={`border-t ${themeClasses.footerBorder} pt-8 flex flex-col md:flex-row justify-between items-center`}>
-      <p className={`${themeClasses.textSecondary} mb-4 md:mb-0`}>
-        &copy; 2025 BookSwap. All rights reserved. Made with <span className="text-orange-500">❤️</span> for book lovers everywhere.
-      </p>
-      <div className="flex space-x-6">
-        <a href="#" className={themeClasses.textSecondary}>Privacy Policy</a>
-        <a href="#" className={themeClasses.textSecondary}>Terms of Service</a>
-        <a href="#" className={themeClasses.textSecondary}>Cookies</a>
-      </div>
-    </div>
-  </div>
-</footer>
 
 
 </div>
